@@ -4,12 +4,6 @@ Gen3 is a utility for managing and computing interdependent values within a tree
 
 Designed with performance in mind, Gen3 caches results to achieve optimal performance, ensuring each function is called only once per `get` method invocation.
 
-## Installation
-
-```sh
-npm install gen3
-```
-
 ## Example: World Generator
 
 First, define your parameters and computed values, and create an instance of Gen3:
