@@ -14,26 +14,26 @@ describe('Gen3', () => {
   });
 
   describe('ComputeFunction invocation', () => {
-    let mockFunction: jest.Mock;
-
-    beforeEach(() => {
-      mockFunction = jest.fn();
-    });
-
     it('should invoke each dependent ComputeFunction only once per get invocation', () => {
-      const gen = new Gen3<{ value: number }, { parent: number, child: number }>();
+        const gen = new Gen3<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
 
-      const parentMock = jest.fn().mockReturnValue(5);
-      const childMock = jest.fn().mockImplementation(({ value: { parent } }) => parent * 2);
+        const parentMock = jest.fn().mockReturnValue(5);
+        const child1Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent + 10);
+        const child2Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent * 2);
+        const finalChildMock = jest.fn().mockImplementation(({ parent: { child1, child2 } }) => child1 + child2);
 
-      gen.define('parent', parentMock);
-      gen.define('child', childMock, ['parent']);
+        gen.define('parent', parentMock);
+        gen.define('child1', child1Mock, ['parent']);
+        gen.define('child2', child2Mock, ['parent']);
+        gen.define('finalChild', finalChildMock, ['child1', 'child2']);
 
-      // Call the get method
-      gen.get('child', { value: 5 });
-      
-      expect(parentMock).toHaveBeenCalledTimes(1);
-      expect(childMock).toHaveBeenCalledTimes(1);
+        gen.get('finalChild', { value: 5 });
+
+        expect(parentMock).toHaveBeenCalledTimes(1);
+        expect(child1Mock).toHaveBeenCalledTimes(1);
+        expect(child2Mock).toHaveBeenCalledTimes(1);
+        expect(finalChildMock).toHaveBeenCalledTimes(1);
+        expect(finalChildMock).toHaveBeenCalledWith({ value: 5, parent: { child1: 15, child2: 10 } });        
     });
   });
 });
