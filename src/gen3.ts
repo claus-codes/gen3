@@ -76,7 +76,7 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
     const fn = this.fnMap.get(key);
     if (!fn) throw new Error(`ComputeFunction "${key as string}" is not defined!`);
     param.parent = param.parent ?? {} as TResult;
-    if (param.parent[key]) return param.value[key];
+    if (param.parent[key]) return param.parent[key];
     param.parent[key] = fn(param as Params<TParam, TResult>);
     return param.parent[key];
   }
@@ -98,14 +98,28 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
     fn: ComputeFunction<TParam, TResult, ReturnType>,
     dependencies: Array<keyof TResult>
   ): ComputeFunction<TParam, TResult, ReturnType> {
-    return ((param: Params<TParam, TResult>): ReturnType => {
-      return fn({
-        ...param,
-        value: dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
-          acc[name] = this.get(name as keyof TResult, param);
-          return acc;
-        }, {} as TResult),
-      });
-    });
+    return ((param: Params<TParam, TResult>): ReturnType =>
+      fn({ ...param, parent: this.getParentValues(dependencies, param) })
+    );
+  }
+
+  /**
+  * Computes and retrieves the values for the specified dependencies using the provided parameters.
+  * 
+  * This method iterates over the list of dependency keys and computes their values using the 
+  * compute functions defined in the Gen3 instance. It then returns an object with these 
+  * computed values associated with their respective keys. This ensures that the computed values 
+  * of dependencies are available and up-to-date when needed by other compute functions.
+  * 
+  * @private
+  * @param dependencies - An array of keys representing the dependencies for which values need to be computed.
+  * @param param - The parameters used to compute the values of the dependencies.
+  * @returns An object containing the computed values for the specified dependencies.
+  */
+  private getParentValues(dependencies: Array<keyof TResult>, param: Params<TParam, TResult>): { [key in keyof TResult]: TResult[key] } {
+    return dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
+      acc[name] = this.get(name as keyof TResult, param);
+      return acc;
+    }, {} as TResult)
   }
 }
