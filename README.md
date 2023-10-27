@@ -15,7 +15,7 @@ type WorldGenParams = {
   x: number;
   y: number;
   noise2D: (x: number, y: number) => number;
-}
+};
 
 type WorldGenResults = {
   continentShape: number;
@@ -28,7 +28,7 @@ type WorldGenResults = {
     height: number;
     biome: string;
   }
-}
+};
 
 const worldGen = new Gen3<WorldGenParams, WorldGenResults>();
 ```
@@ -37,10 +37,10 @@ Define your computations:
 
 ```typescript
 worldGen.define('continentShape', ({ x, y }) =>
-  Math.abs(Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI))
+  Math.abs(Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI));
 );
 worldGen.define('heightNoise', ({ x, y, noise2D }) =>
-  noise2D(x, y)
+  noise2D(x, y);
 );
 worldGen.define('height', ({ parent: { continentShape, heightNoise } }) =>
   continentShape * heightNoise,
@@ -64,13 +64,13 @@ Retrieve computed values:
 
 ```typescript
 // Expect the x and y coordinates in range of 0...1
-const sample = worldGen.get('sample', {
+const { height, biome } = worldGen.get('sample', {
   noise2D: makeNoise2D(seed),
   x: 0.5,
   y: 0.5,
 });
 
-console.log(sample.height, sample.biome);
+console.log(height, biome);
 ```
 
 ## License

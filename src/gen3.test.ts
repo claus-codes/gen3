@@ -33,7 +33,7 @@ describe('Gen3', () => {
         expect(child1Mock).toHaveBeenCalledTimes(1);
         expect(child2Mock).toHaveBeenCalledTimes(1);
         expect(finalChildMock).toHaveBeenCalledTimes(1);
-        expect(finalChildMock).toHaveBeenCalledWith({ value: 5, parent: { child1: 15, child2: 10 } });        
+        expect(finalChildMock).toHaveBeenCalledWith({ value: 5, parent: { child1: 15, child2: 10 } });
     });
   });
 });

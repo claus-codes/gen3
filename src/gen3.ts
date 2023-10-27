@@ -112,6 +112,6 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
     return dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
       acc[name] = this.get(name as keyof TResult, param);
       return acc;
-    }, {} as TResult)
+    }, {} as TResult);
   }
 }
