@@ -39,9 +39,11 @@ Define your computations:
 worldGen.define('continentShape', ({ x, y }) =>
   Math.abs(Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI));
 );
+
 worldGen.define('heightNoise', ({ x, y, noise2D }) =>
   noise2D(x, y);
 );
+
 worldGen.define('height', ({ parent: { continentShape, heightNoise } }) =>
   continentShape * heightNoise,
   ['continentShape', 'heightNoise']
@@ -54,6 +56,7 @@ Gen3 begins to shine when more than once child uses a parent, due to caching par
 worldGen.define('temperature', (params) => ..., ['height']);
 worldGen.define('precipitation', (params) => ..., ['height']);
 worldGen.define('biome', (params) => ..., ['height', 'temperature', 'precipitation']);
+
 worldGen.define('sample', ({ parent: { height, biome } }) =>
   ({ height, biome }),
   ['height', 'biome']
