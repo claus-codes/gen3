@@ -35,10 +35,6 @@ export interface ComputeFunction<TParam extends Record<string, unknown> = Record
 /**
  * Gen3 class: A structured way to manage and compute interdependent values within a tree hierarchy.
  * 
- * By recognizing and respecting the hierarchical relationships between computations, Gen3 ensures that 
- * parent values are calculated before their dependent child values. This characteristic is beneficial for 
- * managing complex computations in which the hierarchical order of execution is crucial.
- * 
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
@@ -55,7 +51,11 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
    * @throws {Error} If a dependency key has not been defined prior to the current computation function.
    * @returns The current Gen3 instance, allowing chaining of method calls.
    */
-  define<K extends keyof TResult>(key: K, fn: ComputeFunction<Params<TParam, TResult>, TResult, TResult[K]>, dependencies?: Array<keyof TResult>): Gen3<TParam, TResult> {
+  define<K extends keyof TResult>(
+    key: K,
+    fn: ComputeFunction<Params<TParam, TResult>, TResult, TResult[K]>,
+    dependencies?: Array<keyof TResult>
+  ): Gen3<TParam, TResult> {
     if (this.fnMap.has(key)) throw new Error(`"${key as string}" is already defined!`);
     dependencies?.forEach((dependency) => {
       if (!this.fnMap.has(dependency)) throw new Error(`Dependency "${dependency as string}" has not been defined yet!`);
@@ -75,19 +75,16 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
   get<K extends keyof TResult>(key: K, param: Params<TParam, TResult> | TParam): TResult[K] {
     const fn = this.fnMap.get(key);
     if (!fn) throw new Error(`ComputeFunction "${key as string}" is not defined!`);
+
     param.parent = param.parent ?? {} as TResult;
     if (param.parent[key]) return param.parent[key];
+
     param.parent[key] = fn(param as Params<TParam, TResult>);
     return param.parent[key];
   }
 
   /**
    * Wraps a compute function ensuring its dependencies are computed first.
-   * 
-   * Given a compute function and its dependencies, this method returns a new function. 
-   * When invoked, the new function first computes the values for its dependencies 
-   * and then calls the original function with these values. This ensures that any 
-   * dependent value is available and up-to-date at the time of computation.
    * 
    * @private
    * @param fn - The compute function to be wrapped.
@@ -104,18 +101,13 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
   }
 
   /**
-  * Computes and retrieves the values for the specified dependencies using the provided parameters.
-  * 
-  * This method iterates over the list of dependency keys and computes their values using the 
-  * compute functions defined in the Gen3 instance. It then returns an object with these 
-  * computed values associated with their respective keys. This ensures that the computed values 
-  * of dependencies are available and up-to-date when needed by other compute functions.
-  * 
-  * @private
-  * @param dependencies - An array of keys representing the dependencies for which values need to be computed.
-  * @param param - The parameters used to compute the values of the dependencies.
-  * @returns An object containing the computed values for the specified dependencies.
-  */
+   * Computes and retrieves the values for the specified dependencies using the provided parameters.
+   * 
+   * @private
+   * @param dependencies - An array of keys representing the dependencies for which values need to be computed.
+   * @param param - The parameters used to compute the values of the dependencies.
+   * @returns An object containing the computed values for the specified dependencies.
+   */
   private getParentValues(dependencies: Array<keyof TResult>, param: Params<TParam, TResult>): { [key in keyof TResult]: TResult[key] } {
     return dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
       acc[name] = this.get(name as keyof TResult, param);
