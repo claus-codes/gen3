@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Gen3: A utility for managing and computing interdependent values within a tree.
  *
@@ -5,13 +6,14 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
  * @license MIT
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Gen3 class: A structured way to manage and compute interdependent values within a tree hierarchy.
  *
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-export default class Gen3 {
+class Gen3 {
     constructor() {
         this.fnMap = new Map();
     }
@@ -80,3 +82,4 @@ export default class Gen3 {
         }, {});
     }
 }
+exports.default = Gen3;
