@@ -96,7 +96,10 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
     dependencies: Array<keyof TResult>
   ): ComputeFunction<TParam, TResult, ReturnType> {
     return ((param: Params<TParam, TResult>): ReturnType =>
-      fn({ ...param, parent: this.getParentValues(dependencies, param) })
+      fn({
+        ...param,
+        parent: this.getParentValues(dependencies, param)
+      })
     );
   }
 
