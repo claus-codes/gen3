@@ -36,6 +36,7 @@ const worldGen = new Gen3<WorldGenParams, WorldGenResults>();
 Define your computations:
 
 ```typescript
+// Expect the x and y coordinates in range of 0...1
 worldGen.define('continentShape', ({ x, y }) =>
   Math.abs(Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI));
 );
@@ -66,7 +67,6 @@ worldGen.define('sample', ({ parent: { height, biome } }) =>
 Retrieve computed values:
 
 ```typescript
-// Expect the x and y coordinates in range of 0...1
 const { height, biome } = worldGen.get('sample', {
   noise2D: makeNoise2D(seed),
   x: 0.5,
