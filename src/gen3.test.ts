@@ -36,4 +36,29 @@ describe('Gen3', () => {
         expect(finalChildMock).toHaveBeenCalledWith({ value: 5, parent: { child1: 15, child2: 10 } });
     });
   });
+
+  describe('Error handling', () => {
+    it('should throw an error when attempting to redefine a ComputeFunction for an existing key', () => {
+      const gen = new Gen3<{ value: number }, { parent: number }>();
+  
+      const parentMock1 = jest.fn();
+      const parentMock2 = jest.fn();
+  
+      gen.define('parent', parentMock1);
+  
+      expect(() => {
+        gen.define('parent', parentMock2);
+      }).toThrowError(/"parent" is already defined!/);
+    });
+
+    it('should throw an error when a ComputeFunction is defined with undefined dependencies', () => {
+      const gen = new Gen3<{ value: number }, { parent: number, child: number }>();
+  
+      const childMock = jest.fn();
+  
+      expect(() => {
+        gen.define('child', childMock, ['parent']);
+      }).toThrowError(/Dependency "parent" has not been defined yet!/);
+    });
+  });
 });
