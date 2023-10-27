@@ -34,10 +34,6 @@ export interface ComputeFunction<TParam extends Record<string, unknown> = Record
 /**
  * Gen3 class: A structured way to manage and compute interdependent values within a tree hierarchy.
  *
- * By recognizing and respecting the hierarchical relationships between computations, Gen3 ensures that
- * parent values are calculated before their dependent child values. This characteristic is beneficial for
- * managing complex computations in which the hierarchical order of execution is crucial.
- *
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
@@ -66,15 +62,19 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
     /**
      * Wraps a compute function ensuring its dependencies are computed first.
      *
-     * Given a compute function and its dependencies, this method returns a new function.
-     * When invoked, the new function first computes the values for its dependencies
-     * and then calls the original function with these values. This ensures that any
-     * dependent value is available and up-to-date at the time of computation.
-     *
      * @private
      * @param fn - The compute function to be wrapped.
      * @param dependencies - List of keys that the compute function depends upon.
      * @returns A new compute function that first computes the values of its dependencies.
      */
     private wrapWithDependencies;
+    /**
+     * Computes and retrieves the values for the specified dependencies using the provided parameters.
+     *
+     * @private
+     * @param dependencies - An array of keys representing the dependencies for which values need to be computed.
+     * @param param - The parameters used to compute the values of the dependencies.
+     * @returns An object containing the computed values for the specified dependencies.
+     */
+    private getParentValues;
 }
