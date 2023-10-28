@@ -1,6 +1,5 @@
 /**
- * This example shows how to create a single compute function that takes
- * two parameters.
+ * Create a single compute function that takes two parameters.
  */
 import Gen3 from '../src/gen3';
 

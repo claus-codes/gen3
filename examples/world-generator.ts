@@ -1,3 +1,6 @@
+/**
+ * Demonstrate the power of `Gen3` by building a basic world generator using multiple compute functions.
+ */
 import Gen3 from '../src/gen3';
 
 // BYON: Bring Your Own Noise
@@ -87,7 +90,7 @@ worldGen.define('biome', ({
   if (temperature > 0.3 && precipitation > 0.3) return 'forest';
   if (temperature <= 0.21) return 'tundra';
   return 'meadows';
-},['height', 'temperature', 'precipitation']);
+}, ['height', 'temperature', 'precipitation']);
 
 // What are we after?
 worldGen.define('sample', ({

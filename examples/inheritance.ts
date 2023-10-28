@@ -1,3 +1,6 @@
+/**
+ * Compute values based on the results from parent compute functions.
+ */
 import Gen3 from '../src/gen3';
 
 // The parameters to pass to this tree
@@ -54,7 +57,7 @@ gen.define('root', ({
   ['child1', 'child2']
 );
 
-// Get the result of the tree
+// Get the result from the tree
 const value = gen.get('root', {
   value1: 4,
   value2: 2,
