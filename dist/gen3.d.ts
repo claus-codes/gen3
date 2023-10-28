@@ -14,7 +14,7 @@
  * @template TParam - The parameters that can be passed to the compute function.
  * @template TResult - The expected result type of the compute function.
  */
-type Params<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
+type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
     parent: {
         [K in keyof TResult]: TResult[K];
     };
@@ -29,7 +29,7 @@ type Params<TParam extends Record<string, unknown>, TResult = Record<string, unk
  * @template ReturnType - The expected return type of the compute function.
  */
 interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
-    (param: Params<TParam, TResult>): ReturnType;
+    (param: ParamsWithParents<TParam, TResult>): ReturnType;
 }
 /**
  * Gen3 class: A structured way to manage and compute interdependent values within a tree hierarchy.
@@ -49,7 +49,7 @@ declare class Gen3<TParam extends Record<string, any> = Record<string, unknown>,
      * @throws {Error} If a dependency key has not been defined prior to the current computation function.
      * @returns The current Gen3 instance, allowing chaining of method calls.
      */
-    define<K extends keyof TResult>(key: K, fn: ComputeFunction<Params<TParam, TResult>, TResult, TResult[K]>, dependencies?: Array<keyof TResult>): Gen3<TParam, TResult>;
+    define<K extends keyof TResult>(key: K, fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>, dependencies?: Array<keyof TResult>): Gen3<TParam, TResult>;
     /**
      * Retrieves the computed value for a specific key, given a set of parameters.
      *
@@ -58,7 +58,7 @@ declare class Gen3<TParam extends Record<string, any> = Record<string, unknown>,
      * @returns The computed value for the given key.
      * @throws {Error} If the key is not defined.
      */
-    get<K extends keyof TResult>(key: K, param: Params<TParam, TResult> | TParam): TResult[K];
+    get<K extends keyof TResult>(key: K, param: ParamsWithParents<TParam, TResult> | TParam): TResult[K];
     /**
      * Wraps a compute function ensuring its dependencies are computed first.
      *

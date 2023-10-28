@@ -15,7 +15,7 @@
  * @template TParam - The parameters that can be passed to the compute function.
  * @template TResult - The expected result type of the compute function.
  */
-type Params<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
+type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
   parent: { [K in keyof TResult]: TResult[K] };
 };
 
@@ -29,7 +29,7 @@ type Params<TParam extends Record<string, unknown>, TResult = Record<string, unk
  * @template ReturnType - The expected return type of the compute function.
  */
 interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
-  (param: Params<TParam, TResult>): ReturnType;
+  (param: ParamsWithParents<TParam, TResult>): ReturnType;
 }
 
 /**
@@ -53,7 +53,7 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
    */
   define<K extends keyof TResult>(
     key: K,
-    fn: ComputeFunction<Params<TParam, TResult>, TResult, TResult[K]>,
+    fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>,
     dependencies?: Array<keyof TResult>
   ): Gen3<TParam, TResult> {
     if (this.fnMap.has(key)) throw new Error(`"${key as string}" is already defined!`);
@@ -72,14 +72,14 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
    * @returns The computed value for the given key.
    * @throws {Error} If the key is not defined.
    */
-  get<K extends keyof TResult>(key: K, param: Params<TParam, TResult> | TParam): TResult[K] {
+  get<K extends keyof TResult>(key: K, param: ParamsWithParents<TParam, TResult> | TParam): TResult[K] {
     const fn = this.fnMap.get(key);
     if (!fn) throw new Error(`ComputeFunction "${key as string}" is not defined!`);
 
     param.parent = param.parent ?? {} as TResult;
     if (param.parent[key]) return param.parent[key];
 
-    param.parent[key] = fn(param as Params<TParam, TResult>);
+    param.parent[key] = fn(param as ParamsWithParents<TParam, TResult>);
     return param.parent[key];
   }
 
@@ -95,7 +95,7 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
     fn: ComputeFunction<TParam, TResult, ReturnType>,
     dependencies: Array<keyof TResult>
   ): ComputeFunction<TParam, TResult, ReturnType> {
-    return ((param: Params<TParam, TResult>): ReturnType =>
+    return ((param: ParamsWithParents<TParam, TResult>): ReturnType =>
       fn({
         ...param,
         parent: this.getParentValues(dependencies, param)
@@ -111,7 +111,7 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
    * @param param - The parameters used to compute the values of the dependencies.
    * @returns An object containing the computed values for the specified dependencies.
    */
-  private getParentValues(dependencies: Array<keyof TResult>, param: Params<TParam, TResult>): { [key in keyof TResult]: TResult[key] } {
+  private getParentValues(dependencies: Array<keyof TResult>, param: ParamsWithParents<TParam, TResult>): { [key in keyof TResult]: TResult[key] } {
     return dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
       acc[name] = this.get(name as keyof TResult, param);
       return acc;
