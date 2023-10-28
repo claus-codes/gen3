@@ -14,7 +14,7 @@
  * @template TParam - The parameters that can be passed to the compute function.
  * @template TResult - The expected result type of the compute function.
  */
-export type Params<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
+type Params<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
     parent: {
         [K in keyof TResult]: TResult[K];
     };
@@ -28,7 +28,7 @@ export type Params<TParam extends Record<string, unknown>, TResult = Record<stri
  * @template TParam - The parameters that can be passed to the compute function.
  * @template ReturnType - The expected return type of the compute function.
  */
-export interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
+interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
     (param: Params<TParam, TResult>): ReturnType;
 }
 /**
@@ -37,7 +37,7 @@ export interface ComputeFunction<TParam extends Record<string, unknown> = Record
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-export default class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult extends Record<string, any> = Record<string, unknown>> {
+declare class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult extends Record<string, any> = Record<string, unknown>> {
     private fnMap;
     /**
      * Defines a computation function for a specific key.
@@ -78,3 +78,4 @@ export default class Gen3<TParam extends Record<string, any> = Record<string, un
      */
     private getParentValues;
 }
+export = Gen3;

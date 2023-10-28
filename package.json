@@ -1,8 +1,8 @@
 {
-  "name": "@claus.codes/gen3",
+  "name": "gen3",
   "version": "0.1.0",
   "description": "A utility for managing and computing interdependent values within a tree.",
-  "main": "index.js",
+  "main": "dist/gen3.js",
   "scripts": {
     "build": "tsc",
     "minify": "terser dist/gen3.js -o dist/gen3.min.js",

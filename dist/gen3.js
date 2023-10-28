@@ -6,7 +6,6 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
  * @license MIT
  */
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Gen3 class: A structured way to manage and compute interdependent values within a tree hierarchy.
  *
@@ -14,9 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @template TResult - The type of results that can be expected from the tree computations.
  */
 class Gen3 {
-    constructor() {
-        this.fnMap = new Map();
-    }
+    fnMap = new Map();
     /**
      * Defines a computation function for a specific key.
      *
@@ -30,7 +27,7 @@ class Gen3 {
     define(key, fn, dependencies) {
         if (this.fnMap.has(key))
             throw new Error(`"${key}" is already defined!`);
-        dependencies === null || dependencies === void 0 ? void 0 : dependencies.forEach((dependency) => {
+        dependencies?.forEach((dependency) => {
             if (!this.fnMap.has(dependency))
                 throw new Error(`Dependency "${dependency}" has not been defined yet!`);
         });
@@ -46,11 +43,10 @@ class Gen3 {
      * @throws {Error} If the key is not defined.
      */
     get(key, param) {
-        var _a;
         const fn = this.fnMap.get(key);
         if (!fn)
             throw new Error(`ComputeFunction "${key}" is not defined!`);
-        param.parent = (_a = param.parent) !== null && _a !== void 0 ? _a : {};
+        param.parent = param.parent ?? {};
         if (param.parent[key])
             return param.parent[key];
         param.parent[key] = fn(param);
@@ -65,7 +61,10 @@ class Gen3 {
      * @returns A new compute function that first computes the values of its dependencies.
      */
     wrapWithDependencies(fn, dependencies) {
-        return ((param) => fn(Object.assign(Object.assign({}, param), { parent: this.getParentValues(dependencies, param) })));
+        return ((param) => fn({
+            ...param,
+            parent: this.getParentValues(dependencies, param)
+        }));
     }
     /**
      * Computes and retrieves the values for the specified dependencies using the provided parameters.
@@ -82,4 +81,4 @@ class Gen3 {
         }, {});
     }
 }
-exports.default = Gen3;
+module.exports = Gen3;
