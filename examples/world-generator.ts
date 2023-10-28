@@ -51,8 +51,7 @@ worldGen.define('height', ({
     heightNoise,
   },
 }) => continentShape * heightNoise,
-  ['continentShape', 'heightNoise']
-);
+  ['continentShape', 'heightNoise']);
 
 // High places are cold
 worldGen.define('temperature', ({
@@ -62,8 +61,8 @@ worldGen.define('temperature', ({
   },
 }) => height > 0.4
   ? y - (height - 0.4) * 2
-  : y
-);
+  : y,
+  ['height']);
 
 // Hot places are dry
 worldGen.define('precipitation', ({
@@ -72,8 +71,7 @@ worldGen.define('precipitation', ({
     temperature
   },
 }) => 1 - temperature,
-  ['temperature']
-);
+  ['temperature']);
 
 // We can work with this...
 worldGen.define('biome', ({
@@ -106,8 +104,7 @@ worldGen.define('sample', ({
     precipitation,
     biome,
   }),
-  ['height', 'temperature', 'precipitation', 'biome']
-);
+  ['height', 'temperature', 'precipitation', 'biome']);
 
 // Lets keep track of our biome counts
 const counts: BiomeCounts = {
