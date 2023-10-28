@@ -1,6 +1,6 @@
 {
   "name": "gen3",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A utility for managing and computing interdependent values within a tree.",
   "main": "dist/gen3.js",
   "scripts": {
