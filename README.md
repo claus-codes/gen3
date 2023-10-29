@@ -13,6 +13,12 @@ This design choice allows for complex compositions of compute functions without 
 - **Highly Customizable**: Tailored to work with custom parameter types and result types.
 - **Type Safety**: Written in TypeScript, ensuring type safety and improved developer experience.
 
+## Installation:
+
+```sh
+npm install gen3
+```
+
 ## Usage
 
 ### Example 1: Hello World
