@@ -6,6 +6,8 @@
  * @license MIT
  */
 
+type ResultObject<T> = { [K in keyof T]: T[K] };
+
 /**
  * Represents the parameters that can be passed to compute functions.
  * 
@@ -15,8 +17,11 @@
  * @template TParam - The parameters that can be passed to the compute function.
  * @template TResult - The expected result type of the compute function.
  */
-type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
-  parent: { [K in keyof TResult]: TResult[K] };
+type ParamsWithParents<
+  TParam extends Record<string, unknown>,
+  TResult = Record<string, unknown>
+> = TParam & {
+  parent: ResultObject<TResult>;
 };
 
 /**
@@ -28,7 +33,11 @@ type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<
  * @template TParam - The parameters that can be passed to the compute function.
  * @template ReturnType - The expected return type of the compute function.
  */
-interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
+interface ComputeFunction<
+  TParam extends Record<string, unknown> = Record<string, unknown>,
+  TResult extends Record<string, unknown> = Record<string, unknown>,
+  ReturnType = unknown
+> {
   (param: ParamsWithParents<TParam, TResult>): ReturnType;
 }
 
@@ -38,7 +47,10 @@ interface ComputeFunction<TParam extends Record<string, unknown> = Record<string
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult extends Record<string, any> = Record<string, unknown>> {
+class Gen3<
+  TParam extends Record<string, any> = Record<string, unknown>,
+  TResult extends Record<string, any> = Record<string, unknown>
+> {
   private fnMap: Map<keyof TResult, ComputeFunction<TParam, TResult, TResult[keyof TResult]>> = new Map();
 
   /**
@@ -56,9 +68,11 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
     fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>,
     dependencies?: Array<keyof TResult>
   ): Gen3<TParam, TResult> {
-    if (this.fnMap.has(key)) throw new Error(`"${key as string}" is already defined!`);
+    if (this.fnMap.has(key))
+      throw new Error(`"${key as string}" is already defined!`);
     dependencies?.forEach((dependency) => {
-      if (!this.fnMap.has(dependency)) throw new Error(`Dependency "${dependency as string}" has not been defined yet!`);
+      if (!this.fnMap.has(dependency))
+        throw new Error(`Dependency "${dependency as string}" has not been defined yet!`);
     });
     this.fnMap.set(key, dependencies ? this.wrapWithDependencies(fn, dependencies) : fn);
     return this;
@@ -74,7 +88,8 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
    */
   get<K extends keyof TResult>(key: K, param: ParamsWithParents<TParam, TResult> | TParam): TResult[K] {
     const fn = this.fnMap.get(key);
-    if (!fn) throw new Error(`ComputeFunction "${key as string}" is not defined!`);
+    if (!fn)
+      throw new Error(`ComputeFunction "${key as string}" is not defined!`);
 
     param.parent = param.parent ?? {} as TResult;
     if (param.parent[key]) return param.parent[key];
@@ -111,7 +126,10 @@ class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult
    * @param param - The parameters used to compute the values of the dependencies.
    * @returns An object containing the computed values for the specified dependencies.
    */
-  private getParentValues(dependencies: Array<keyof TResult>, param: ParamsWithParents<TParam, TResult>): { [key in keyof TResult]: TResult[key] } {
+  private getParentValues(
+    dependencies: Array<keyof TResult>,
+    param: ParamsWithParents<TParam, TResult>
+  ): ResultObject<TResult> {
     return dependencies.reduce((acc: { [key in keyof TResult]: TResult[key] }, name) => {
       acc[name] = this.get(name as keyof TResult, param);
       return acc;

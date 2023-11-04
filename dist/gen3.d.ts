@@ -5,6 +5,9 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
  * @license MIT
  */
+type ResultObject<T> = {
+    [K in keyof T]: T[K];
+};
 /**
  * Represents the parameters that can be passed to compute functions.
  *
@@ -15,9 +18,7 @@
  * @template TResult - The expected result type of the compute function.
  */
 type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
-    parent: {
-        [K in keyof TResult]: TResult[K];
-    };
+    parent: ResultObject<TResult>;
 };
 /**
  * The type for compute functions used within Gen3.
