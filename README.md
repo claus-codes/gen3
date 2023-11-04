@@ -43,17 +43,21 @@ Compute values based on the results from parent compute functions.
 ```js
 const gen = new Gen3();
 
-gen.define('parentValue', ({ value1, value })
+// parentValue uses both value1 and value2 parameters
+gen.define('parentValue', ({ value1, value2 })
 => value1 * value2);
 
+// child1 uses value1 parameter, and the parentValue
 gen.define('child1', ({ value1, parent: { parentValue } })
 => parentValue * 2 - value1,
   ['parentValue']);
 
+// child2 uses value2 parameter, and the parentValue
 gen.define('child2', ({ value2, parent: { parentValue } })
 => parentValue / 2 + value2,
   ['parentValue']);
 
+// root uses someValue parameter, and parents child1 and child2
 gen.define('root', ({ someValue, parent: { child1, child2 } })
 => child1 * child2 + someValue,
   ['child1', 'child2']);
@@ -64,30 +68,57 @@ console.log(`The meaning of life, the universe, and everything is ${value}`);
 
 ### Example 3: World Generator
 
-Demonstrate the power of `Gen3` by building a basic world generator using multiple compute functions.
+To demonstrate the power of `Gen3`, lets build a basic world generator using multiple compute functions.
+
+A preview of the generated values follows each `define` call.
 
 ```js
 import Gen3 from 'gen3';
 import { createNoise2D } from 'simplex-noise';
 
+const worldGen = new Gen3();
+```
+
+```js
+// We want two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({ x, y })
-=> Math.abs(Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI)));
+=> Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
+```
+![Image for shape of the continents](./images/world-gen-continent-shape.png "Shape of the continents")
 
+```js
+// Adding gradient noise makes the world less flat
 worldGen.define('heightNoise', ({ x, y, noiseScale, noise2D })
-=> noise2D(x / noiseScale, y / noiseScale) * 0.5 + 0.5);
+=> noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
+```
+![Image for height noise](./images/world-gen-height-noise.png "Height noise")
 
+```js
+// Combine continent shape and height noise
 worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
+```
+![Image for combined height](./images/world-gen-height.png "Combined height")
 
+```js
+// North is cold, and South is hot, and peaks are covered in frost
 worldGen.define('temperature', ({ x, y, parent: { height } })
 => height > 0.4 ? y - (height - 0.4) * 2 : y,
   ['height']);
+```
+![Image for temperature](./images/world-gen-temperature.png "Temperature")
 
+```js
+// Hotter areas have less rainfall
 worldGen.define('precipitation', ({ parent: { temperature } })
 => 1 - temperature,
   ['temperature']);
+```
+![Image for precipitation](./images/world-gen-precipitation.png "Precipitation")
 
+```js
+// Height, temperature and precipitation are used to calculate the biome
 worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 => {
   if (height < 0.2023) return 'ocean';
@@ -97,14 +128,22 @@ worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
   if (temperature <= 0.21) return 'tundra';
   return 'meadows';
 }, ['height', 'temperature', 'precipitation']);
+```
+![Image for biomes](./images/world-gen-biome.png "Biome")
 
+```js
+// The final sample returns the height and biome
 worldGen.define('sample', ({ parent: { height, biome } })
 => ({ height, biome }),
   ['height', 'biome']);
+```
+![Image for sampled values](./images/world-gen-sample.png "Finished sample")
 
+```js
+// The world is ready to be sampled
 const { height, biome } = worldGen.get('sample', {
-  x: 0.420,
-  y: 0.69,
+  x: 0.5,
+  y: 0.5,
   noiseScale: 64,
   noise2D
 });

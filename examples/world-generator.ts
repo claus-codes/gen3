@@ -37,7 +37,7 @@ const worldGen = new Gen3<WorldGenParams, WorldGenResults>();
 worldGen.define('continentShape', ({
   x, y,
 }) => Math.abs(
-        Math.cos(x * Math.PI + Math.PI * 0.5) * Math.sin(y * Math.PI)
+        Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)
       ));
 
 // A little pepper pepper pepper
@@ -45,7 +45,7 @@ worldGen.define('heightNoise', ({
   x, y,
   noiseScale,
   noise2D,
-}) => noise2D(x / noiseScale, y / noiseScale) * 0.5 + 0.5);
+}) => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
 
 // Combine the two to achieve landscape
 worldGen.define('height', ({
@@ -162,7 +162,7 @@ for (let x = 0; x < 1; x += r) {
       temperature
     } = worldGen.get('sample', {
       x, y,
-      noiseScale: 64,
+      noiseScale: 8,
       noise2D,
     });
 
