@@ -3,6 +3,11 @@
   "version": "0.1.6",
   "description": "A utility for managing and computing interdependent values within a tree.",
   "main": "dist/gen3.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "minify": "terser dist/gen3.js -o dist/gen3.min.js",
@@ -12,7 +17,15 @@
     "type": "git",
     "url": "git+https://github.com/claus-codes/gen3.git"
   },
-  "keywords": [],
+  "keywords": [
+    "procedural",
+    "generation",
+    "generative",
+    "compute",
+    "tree",
+    "graph",
+    "hierarchy"
+  ],
   "author": "Claus Nuoskanen <claus.nuoskanen@gmail.com>",
   "license": "MIT",
   "bugs": {

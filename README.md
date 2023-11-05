@@ -70,55 +70,36 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 
 Lets build a basic world generator using multiple compute functions, and a gradient noise function as a parameter. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
 
-A preview using the generated values follows each `define()` call.
-
 ```js
 import Gen3 from 'gen3';
 import { createNoise2D } from 'simplex-noise';
 
 const worldGen = new Gen3();
 const noise2D = createNoise2D();
-```
 
-```js
 // Two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({ x, y })
 => Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
-```
-![Image for shape of the continents](./images/world-gen-continent-shape.png "Shape of the continents")
 
-```js
 // Gradient noise makes the world less flat
 worldGen.define('heightNoise', ({ x, y, noiseScale, noise2D })
 => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
-```
-![Image for height noise](./images/world-gen-height-noise.png "Height noise")
 
-```js
 // Combine continent shape and height noise for the final noise value
 worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
-```
-![Image for combined height](./images/world-gen-height.png "Combined height")
 
-```js
 // North is cold, South is hot, and peaks are covered in frost
 worldGen.define('temperature', ({ x, y, parent: { height } })
 => height > 0.4 ? y - (height - 0.4) * 2 : y,
   ['height']);
-```
-![Image for temperature](./images/world-gen-temperature.png "Temperature")
 
-```js
 // Hotter areas have less rainfall
 worldGen.define('precipitation', ({ parent: { temperature } })
 => 1 - temperature,
   ['temperature']);
-```
-![Image for precipitation](./images/world-gen-precipitation.png "Precipitation")
 
-```js
 // Height, temperature and precipitation are used to determine the biome
 worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 => {
@@ -129,10 +110,7 @@ worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
   if (temperature <= 0.21) return 'tundra';
   return 'meadows';
 }, ['height', 'temperature', 'precipitation']);
-```
-![Image for biomes](./images/world-gen-biome.png "Biome")
 
-```js
 // Sampling returns the height and biome
 worldGen.define('sample', ({ parent: { height, biome } })
 => ({ height, biome }),
@@ -145,6 +123,17 @@ const { height, biome } = worldGen.get('sample', {
   noise2D
 });
 ```
+
+The functionality of the code above might be a little hard to understand, so here is a visual representation of each computed value when sampling the world at 128x128 resolution:
+
+| Value | Preview image |
+| --------- | ----------- |
+| `continentShape` | ![Image for shape of the continents](./images/world-gen-continent-shape.png "Shape of the continents") |
+| `heightNoise` | ![Image for height noise](./images/world-gen-height-noise.png "Height noise") |
+| `height` | ![Image for combined height](./images/world-gen-height.png "Combined height") |
+| `temperature` | ![Image for temperature](./images/world-gen-temperature.png "Temperature") |
+| `precipitation` | ![Image for precipitation](./images/world-gen-precipitation.png "Precipitation") |
+| `biome` | ![Image for biomes](./images/world-gen-biome.png "Biome") |
 
 ## TypeScript Examples
 
