@@ -13,6 +13,9 @@
  * @template TResult - The type of results that can be expected from the tree computations.
  */
 class Gen3 {
+    /**
+     * A map of compute functions, keyed by the name of the computed value.
+     */
     fnMap = new Map();
     /**
      * Defines a computation function for a specific key.

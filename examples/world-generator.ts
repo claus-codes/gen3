@@ -1,10 +1,9 @@
 /**
- * Demonstrate the power of `Gen3` by building a basic world generator using multiple compute functions.
+ * A basic world generator using multiple compute functions.
  */
 import Gen3 from '../src/gen3';
-
-// BYON: Bring Your Own Noise
 import { createNoise2D } from 'simplex-noise';
+
 const noise2D = createNoise2D();
 
 // Expect the x and y coordinates in range of 0...1
@@ -15,7 +14,6 @@ type WorldGenParams = {
   noiseScale: number;
 };
 
-// More complex results
 type WorldGenResults = {
   continentShape: number;
   heightNoise: number;
@@ -33,21 +31,21 @@ type WorldGenResults = {
 
 const worldGen = new Gen3<WorldGenParams, WorldGenResults>();
 
-// Two horizontal bumps in a mathematical landscape
+// Two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({
   x, y,
 }) => Math.abs(
         Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)
       ));
 
-// A little pepper pepper pepper
+// Gradient noise makes the world less flat
 worldGen.define('heightNoise', ({
   x, y,
   noiseScale,
   noise2D,
 }) => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
 
-// Combine the two to achieve landscape
+// Combine continent shape and height noise for the final noise value
 worldGen.define('height', ({
   parent: {
     continentShape,
@@ -56,7 +54,7 @@ worldGen.define('height', ({
 }) => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
 
-// High places are cold
+// North is cold, South is hot, and peaks are covered in frost
 worldGen.define('temperature', ({
   x, y,
   parent: {
@@ -67,7 +65,7 @@ worldGen.define('temperature', ({
   : y,
   ['height']);
 
-// Hot places are dry
+// Hotter areas have less rainfall
 worldGen.define('precipitation', ({
   x, y,
   parent: {
@@ -76,7 +74,7 @@ worldGen.define('precipitation', ({
 }) => 1 - temperature,
   ['temperature']);
 
-// We can work with this...
+// Height, temperature and precipitation are used to determine the biome
 worldGen.define('biome', ({
   parent: {
     height,
@@ -92,7 +90,7 @@ worldGen.define('biome', ({
   return 'meadows';
 }, ['height', 'temperature', 'precipitation']);
 
-// What are we after?
+// Sampling returns the height, temperature, precipitation and biome
 worldGen.define('sample', ({
   parent: {
     height,
@@ -109,17 +107,7 @@ worldGen.define('sample', ({
   }),
   ['height', 'temperature', 'precipitation', 'biome']);
 
-// Lets keep track of our biome counts
-const counts: BiomeCounts = {
-  ocean: 0,
-  desert: 0,
-  rainforest: 0,
-  forest: 0,
-  tundra: 0,
-  meadows: 0,
-};
-
-// TypeScript...
+// Keep track of our biome counts
 type BiomeCounts = {
   ocean: number;
   desert: number;
@@ -131,7 +119,16 @@ type BiomeCounts = {
 
 type BiomeKey = keyof BiomeCounts;
 
-// And our ranges!
+const counts: BiomeCounts = {
+  ocean: 0,
+  desert: 0,
+  rainforest: 0,
+  forest: 0,
+  tundra: 0,
+  meadows: 0,
+};
+
+// Keep track of our ranges
 const ranges = {
   height: {
     min: Infinity,

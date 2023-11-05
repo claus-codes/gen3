@@ -1,8 +1,8 @@
 # Gen3: Efficient Computation of Interdependent Values
 
-`Gen3` is a powerful TypeScript library designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
+`Gen3` is a powerful TypeScript utility designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
 
-Efficiency is a core principle in the design of this library. When you request a result by invoking a compute function, the library ensures that each function is called just once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
+Efficiency is a core principle in the design of this utility. When you request a result by invoking a compute function, `Gen3` ensures that each compute function is invoked only once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
 
 This design choice allows for complex compositions of compute functions without the worry of redundant calculations, leading to faster and more predictable outcomes.
 
@@ -63,38 +63,39 @@ gen.define('root', ({ someValue, parent: { child1, child2 } })
   ['child1', 'child2']);
 
 const value = gen.get('root', { value1: 4, value2: 2, someValue: -30 });
-console.log(`The meaning of life, the universe, and everything is ${value}`);
+console.log(`The meaning of life, the universe, and everything is ${value}`); // 42
 ```
 
 ### Example 3: World Generator
 
-To demonstrate the power of `Gen3`, lets build a basic world generator using multiple compute functions.
+Lets build a basic world generator using multiple compute functions, and a gradient noise function as a parameter. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
 
-A preview of the generated values follows each `define` call.
+A preview using the generated values follows each `define()` call.
 
 ```js
 import Gen3 from 'gen3';
 import { createNoise2D } from 'simplex-noise';
 
 const worldGen = new Gen3();
+const noise2D = createNoise2D();
 ```
 
 ```js
-// We want two continents horiontally spanning the height of the world
+// Two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({ x, y })
 => Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
 ```
 ![Image for shape of the continents](./images/world-gen-continent-shape.png "Shape of the continents")
 
 ```js
-// Adding gradient noise makes the world less flat
+// Gradient noise makes the world less flat
 worldGen.define('heightNoise', ({ x, y, noiseScale, noise2D })
 => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
 ```
 ![Image for height noise](./images/world-gen-height-noise.png "Height noise")
 
 ```js
-// Combine continent shape and height noise
+// Combine continent shape and height noise for the final noise value
 worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
@@ -102,7 +103,7 @@ worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 ![Image for combined height](./images/world-gen-height.png "Combined height")
 
 ```js
-// North is cold, and South is hot, and peaks are covered in frost
+// North is cold, South is hot, and peaks are covered in frost
 worldGen.define('temperature', ({ x, y, parent: { height } })
 => height > 0.4 ? y - (height - 0.4) * 2 : y,
   ['height']);
@@ -118,7 +119,7 @@ worldGen.define('precipitation', ({ parent: { temperature } })
 ![Image for precipitation](./images/world-gen-precipitation.png "Precipitation")
 
 ```js
-// Height, temperature and precipitation are used to calculate the biome
+// Height, temperature and precipitation are used to determine the biome
 worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 => {
   if (height < 0.2023) return 'ocean';
@@ -132,19 +133,15 @@ worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 ![Image for biomes](./images/world-gen-biome.png "Biome")
 
 ```js
-// The final sample returns the height and biome
+// Sampling returns the height and biome
 worldGen.define('sample', ({ parent: { height, biome } })
 => ({ height, biome }),
   ['height', 'biome']);
-```
-![Image for sampled values](./images/world-gen-sample.png "Finished sample")
 
-```js
-// The world is ready to be sampled
 const { height, biome } = worldGen.get('sample', {
   x: 0.5,
   y: 0.5,
-  noiseScale: 64,
+  noiseScale: 8,
   noise2D
 });
 ```

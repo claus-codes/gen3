@@ -8,6 +8,7 @@
 type ResultObject<T> = {
     [K in keyof T]: T[K];
 };
+type DefaultRecord = Record<string, unknown>;
 /**
  * Represents the parameters that can be passed to compute functions.
  *
@@ -17,7 +18,7 @@ type ResultObject<T> = {
  * @template TParam - The parameters that can be passed to the compute function.
  * @template TResult - The expected result type of the compute function.
  */
-type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<string, unknown>> = TParam & {
+type ParamsWithParents<TParam extends DefaultRecord, TResult = DefaultRecord> = TParam & {
     parent: ResultObject<TResult>;
 };
 /**
@@ -29,7 +30,7 @@ type ParamsWithParents<TParam extends Record<string, unknown>, TResult = Record<
  * @template TParam - The parameters that can be passed to the compute function.
  * @template ReturnType - The expected return type of the compute function.
  */
-interface ComputeFunction<TParam extends Record<string, unknown> = Record<string, unknown>, TResult extends Record<string, unknown> = Record<string, unknown>, ReturnType = unknown> {
+interface ComputeFunction<TParam extends DefaultRecord = DefaultRecord, TResult extends DefaultRecord = DefaultRecord, ReturnType = unknown> {
     (param: ParamsWithParents<TParam, TResult>): ReturnType;
 }
 /**
@@ -38,7 +39,10 @@ interface ComputeFunction<TParam extends Record<string, unknown> = Record<string
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-declare class Gen3<TParam extends Record<string, any> = Record<string, unknown>, TResult extends Record<string, any> = Record<string, unknown>> {
+declare class Gen3<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> {
+    /**
+     * A map of compute functions, keyed by the name of the computed value.
+     */
     private fnMap;
     /**
      * Defines a computation function for a specific key.
