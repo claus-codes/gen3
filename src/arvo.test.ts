@@ -1,10 +1,10 @@
-import Gen3 from './gen3';
+import Arvo from './arvo';
 
-describe('Gen3', () => {
+describe('Arvo', () => {
   describe('Inheritance of computed values', () => {
     it('should compute values based on dependent values', () => {
-      const gen = new Gen3<{ x: number }, { parent: number, child: number }>();
-      
+      const gen = new Arvo<{ x: number }, { parent: number, child: number }>();
+
       gen.define('parent', ({ x }) => x);
       gen.define('child', ({ parent: { parent } }) => parent * 2, ['parent']);
 
@@ -15,7 +15,7 @@ describe('Gen3', () => {
 
   describe('ComputeFunction invocation', () => {
     it('should invoke each dependent ComputeFunction only once per get invocation', () => {
-        const gen = new Gen3<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
+        const gen = new Arvo<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
 
         const parentMock = jest.fn().mockReturnValue(5);
         const child1Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent + 10);
@@ -37,25 +37,40 @@ describe('Gen3', () => {
     });
   });
 
+  describe('Deeply Nested Dependencies', () => {
+    it('should correctly compute values with multiple layers of dependencies', () => {
+      const gen = new Arvo<{ base: number }, { a: number, b: number, c: number, d: number, e: number }>();
+
+      gen.define('a', ({ base }) => base * 2);
+      gen.define('b', ({ parent: { a } }) => a + 3, ['a']);
+      gen.define('c', ({ parent: { b } }) => b * 2, ['b']);
+      gen.define('d', ({ parent: { c } }) => c - 5, ['c']);
+      gen.define('e', ({ parent: { d } }) => d * d, ['d']);
+
+      const result = gen.get('e', { base: 3 });
+      expect(result).toBe(169); // Calculation: 3*2 = 6, 6+3 = 9, 9*2 = 18, 18-5 = 13, 13*13 = 169
+    });
+  });
+
   describe('Error handling', () => {
     it('should throw an error when attempting to redefine a ComputeFunction for an existing key', () => {
-      const gen = new Gen3<{ value: number }, { parent: number }>();
-  
+      const gen = new Arvo<{ value: number }, { parent: number }>();
+
       const parentMock1 = jest.fn();
       const parentMock2 = jest.fn();
-  
+
       gen.define('parent', parentMock1);
-  
+
       expect(() => {
         gen.define('parent', parentMock2);
       }).toThrowError(/"parent" is already defined!/);
     });
 
     it('should throw an error when a ComputeFunction is defined with undefined dependencies', () => {
-      const gen = new Gen3<{ value: number }, { parent: number, child: number }>();
-  
+      const gen = new Arvo<{ value: number }, { parent: number, child: number }>();
+
       const childMock = jest.fn();
-  
+
       expect(() => {
         gen.define('child', childMock, ['parent']);
       }).toThrowError(/Dependency "parent" has not been defined yet!/);

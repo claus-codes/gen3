@@ -1,21 +1,20 @@
 {
-  "name": "gen3",
+  "name": "arvo",
   "version": "0.1.6",
   "description": "A utility for managing and computing interdependent values within a tree.",
-  "main": "dist/gen3.js",
+  "main": "dist/arvo.js",
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "minify": "terser dist/gen3.js -o dist/gen3.min.js",
+    "build": "tsc && terser dist/arvo.js -o dist/arvo.min.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claus-codes/gen3.git"
+    "url": "git+https://github.com/claus-codes/arvo.git"
   },
   "keywords": [
     "procedural",
@@ -24,20 +23,23 @@
     "compute",
     "tree",
     "graph",
-    "hierarchy"
+    "hierarchy",
+    "arvo"
   ],
   "author": "Claus Nuoskanen <claus.nuoskanen@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/claus-codes/gen3/issues"
+    "url": "https://github.com/claus-codes/arvo/issues"
   },
-  "homepage": "https://github.com/claus-codes/gen3#readme",
+  "homepage": "https://github.com/claus-codes/arvo#readme",
   "devDependencies": {
-    "@types/jest": "^29.5.5",
+    "@types/jest": "^29.5.11",
+    "eslint": "^8.55.0",
     "jest": "^29.7.0",
+    "prettier": "^3.1.0",
     "simplex-noise": "^4.0.1",
-    "terser": "^5.22.0",
+    "terser": "^5.26.0",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   }
 }

@@ -1,8 +1,8 @@
-# Gen3: Efficient Computation of Interdependent Values
+# Arvo: Efficient Computation of Interdependent Values
 
-`Gen3` is a powerful TypeScript utility designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
+`Arvo` is a powerful TypeScript utility designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
 
-Efficiency is a core principle in the design of this utility. When you request a result by invoking a compute function, `Gen3` ensures that each compute function is invoked only once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
+Efficiency is a core principle in the design of this utility. When you request a result by invoking a compute function, `Arvo` ensures that each compute function is invoked only once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
 
 This design choice allows for complex compositions of compute functions without the worry of redundant calculations, leading to faster and more predictable outcomes.
 
@@ -16,7 +16,7 @@ This design choice allows for complex compositions of compute functions without 
 ## Installation:
 
 ```sh
-npm install gen3
+npm install arvo
 ```
 
 ## Usage
@@ -26,13 +26,13 @@ npm install gen3
 Create a single compute function that takes two parameters.
 
 ```js
-import Gen3 from 'gen3';
+import Arvo from 'arvo';
 
-const gen = new Gen3();
+const gen = new Arvo();
 
 gen.define('output', ({ greeting, recipient }) => `${greeting} ${recipient}!`);
 
-const output = gen.get('output', { greeting: 'Hello', recipient: 'World' }); 
+const output = gen.get('output', { greeting: 'Hello', recipient: 'World' });
 console.log(output); // Hello World!
 ```
 
@@ -41,7 +41,7 @@ console.log(output); // Hello World!
 Compute values based on the results from parent compute functions.
 
 ```js
-const gen = new Gen3();
+const gen = new Arvo();
 
 // parentValue uses both value1 and value2 parameters
 gen.define('parentValue', ({ value1, value2 })
@@ -71,35 +71,50 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 Lets build a basic world generator using multiple compute functions, and a gradient noise function as a parameter. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
 
 ```js
-import Gen3 from 'gen3';
+import Arvo from 'arvo';
 import { createNoise2D } from 'simplex-noise';
 
-const worldGen = new Gen3();
+const worldGen = new Arvo();
 const noise2D = createNoise2D();
 
 // Two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({ x, y })
 => Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
+```
+![Continent shapes](./images/world-gen-continent-shape.png "Continent shapes")
 
+```js
 // Gradient noise makes the world less flat
 worldGen.define('heightNoise', ({ x, y, noiseScale, noise2D })
 => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
+```
+![Height noise](./images/world-gen-height-noise.png "Height noise")
 
+```js
 // Combine continent shape and height noise for the final noise value
 worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
+```
+![Height](./images/world-gen-height.png "Height")
 
+```js
 // North is cold, South is hot, and peaks are covered in frost
 worldGen.define('temperature', ({ x, y, parent: { height } })
 => height > 0.4 ? y - (height - 0.4) * 2 : y,
   ['height']);
+```
+![Preview of temperature map](./images/world-gen-temperature.png "Temperature")
 
+```js
 // Hotter areas have less rainfall
 worldGen.define('precipitation', ({ parent: { temperature } })
 => 1 - temperature,
   ['temperature']);
+```
+![Image for precipitation](./images/world-gen-precipitation.png "Precipitation")
 
+```js
 // Height, temperature and precipitation are used to determine the biome
 worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 => {
@@ -110,12 +125,16 @@ worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
   if (temperature <= 0.21) return 'tundra';
   return 'meadows';
 }, ['height', 'temperature', 'precipitation']);
+```
+![Image for biomes](./images/world-gen-biome.png "Biome")
 
+```js
 // Sampling returns the height and biome
 worldGen.define('sample', ({ parent: { height, biome } })
 => ({ height, biome }),
   ['height', 'biome']);
 
+// For x and y, pick any fractional value between 0.0 and 1.0
 const { height, biome } = worldGen.get('sample', {
   x: 0.5,
   y: 0.5,
@@ -124,20 +143,9 @@ const { height, biome } = worldGen.get('sample', {
 });
 ```
 
-The functionality of the code above might be a little hard to understand, so here is a visual representation of each computed value when sampling the world at 128x128 resolution:
-
-| Value | Preview image |
-| --------- | ----------- |
-| `continentShape` | ![Image for shape of the continents](./images/world-gen-continent-shape.png "Shape of the continents") |
-| `heightNoise` | ![Image for height noise](./images/world-gen-height-noise.png "Height noise") |
-| `height` | ![Image for combined height](./images/world-gen-height.png "Combined height") |
-| `temperature` | ![Image for temperature](./images/world-gen-temperature.png "Temperature") |
-| `precipitation` | ![Image for precipitation](./images/world-gen-precipitation.png "Precipitation") |
-| `biome` | ![Image for biomes](./images/world-gen-biome.png "Biome") |
-
 ## TypeScript Examples
 
-Explore the following TypeScript examples to get a better understanding of how `Gen3` can be used:
+Explore the following TypeScript examples to get a better understanding of how `Arvo` can be used:
 
 - [Hello World!](examples/hello-world.ts)
 - [Inheritance](examples/inheritance.ts)
@@ -145,4 +153,4 @@ Explore the following TypeScript examples to get a better understanding of how `
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.

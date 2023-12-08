@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Arvo: A utility for managing and computing interdependent values within a tree.
  *
@@ -5,45 +6,17 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
  * @license MIT
  */
-type ResultObject<T> = {
-    [K in keyof T]: T[K];
-};
-type DefaultRecord = Record<string, unknown>;
-/**
- * Represents the parameters that can be passed to compute functions.
- *
- * The parent property within Params can be used to access previously computed values, thus ensuring
- * consistent and efficient calculations when iterating with different parameters.
- *
- * @template TParam - The parameters that can be passed to the compute function.
- * @template TResult - The expected result type of the compute function.
- */
-type ParamsWithParents<TParam extends DefaultRecord, TResult = DefaultRecord> = TParam & {
-    parent: ResultObject<TResult>;
-};
-/**
- * The type for compute functions used within Arvo.
- *
- * Compute functions take in parameters and return a computed value. They may also depend on other computed
- * values, which can be accessed using the 'value' property of the parameters.
- *
- * @template TParam - The parameters that can be passed to the compute function.
- * @template ReturnType - The expected return type of the compute function.
- */
-interface ComputeFunction<TParam extends DefaultRecord = DefaultRecord, TResult extends DefaultRecord = DefaultRecord, ReturnType = unknown> {
-    (param: ParamsWithParents<TParam, TResult>): ReturnType;
-}
 /**
  * Arvo class: A structured way to manage and compute interdependent values within a tree hierarchy.
  *
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-declare class Arvo<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> {
+class Arvo {
     /**
      * A map of compute functions, keyed by the name of the computed value.
      */
-    private fnMap;
+    fnMap = new Map();
     /**
      * Defines a computation function for a specific key.
      *
@@ -54,7 +27,16 @@ declare class Arvo<TParam extends Record<string, any> = DefaultRecord, TResult e
      * @throws {Error} If a dependency key has not been defined prior to the current computation function.
      * @returns The current Arvo instance, allowing chaining of method calls.
      */
-    define<K extends keyof TResult>(key: K, fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>, dependencies?: Array<keyof TResult>): Arvo<TParam, TResult>;
+    define(key, fn, dependencies) {
+        if (this.fnMap.has(key))
+            throw new Error(`"${key}" is already defined!`);
+        dependencies?.forEach((dependency) => {
+            if (!this.fnMap.has(dependency))
+                throw new Error(`Dependency "${dependency}" has not been defined yet!`);
+        });
+        this.fnMap.set(key, dependencies ? this.wrapWithDependencies(fn, dependencies) : fn);
+        return this;
+    }
     /**
      * Retrieves the computed value for a specific key, given a set of parameters.
      *
@@ -63,7 +45,16 @@ declare class Arvo<TParam extends Record<string, any> = DefaultRecord, TResult e
      * @returns The computed value for the given key.
      * @throws {Error} If the key is not defined.
      */
-    get<K extends keyof TResult>(key: K, param: ParamsWithParents<TParam, TResult> | TParam): TResult[K];
+    get(key, param) {
+        const fn = this.fnMap.get(key);
+        if (!fn)
+            throw new Error(`ComputeFunction "${key}" is not defined!`);
+        param.parent = param.parent ?? {};
+        if (param.parent[key])
+            return param.parent[key];
+        param.parent[key] = fn(param);
+        return param.parent[key];
+    }
     /**
      * Wraps a compute function ensuring its dependencies are computed first.
      *
@@ -72,7 +63,12 @@ declare class Arvo<TParam extends Record<string, any> = DefaultRecord, TResult e
      * @param dependencies - List of keys that the compute function depends upon.
      * @returns A new compute function that first computes the values of its dependencies.
      */
-    private wrapWithDependencies;
+    wrapWithDependencies(fn, dependencies) {
+        return ((param) => fn({
+            ...param,
+            parent: this.getParentValues(dependencies, param)
+        }));
+    }
     /**
      * Computes and retrieves the values for the specified dependencies using the provided parameters.
      *
@@ -81,6 +77,11 @@ declare class Arvo<TParam extends Record<string, any> = DefaultRecord, TResult e
      * @param param - The parameters used to compute the values of the dependencies.
      * @returns An object containing the computed values for the specified dependencies.
      */
-    private getParentValues;
+    getParentValues(dependencies, param) {
+        return dependencies.reduce((acc, name) => {
+            acc[name] = this.get(name, param);
+            return acc;
+        }, {});
+    }
 }
-export = Arvo;
+module.exports = Arvo;

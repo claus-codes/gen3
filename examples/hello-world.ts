@@ -1,7 +1,7 @@
 /**
  * Create a single compute function that takes two parameters.
  */
-import Gen3 from '../src/gen3';
+import Arvo from '../src/arvo';
 
 // The parameters to pass to this tree
 type Params = {
@@ -15,7 +15,7 @@ type Results = {
 }
 
 // Create a new tree
-const gen = new Gen3<Params, Results>();
+const gen = new Arvo<Params, Results>();
 
 // Define a node in the tree
 gen.define('output', ({
@@ -27,6 +27,6 @@ gen.define('output', ({
 const output = gen.get('output', {
   greeting: 'Hello',
   recipient: 'World',
-}); 
+});
 
 console.log(output); // Hello World
