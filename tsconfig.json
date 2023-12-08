@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
-    "outDir": "./dist",
+    "outDir": "./",
     "strict": true,
     "declaration": true,
     "skipLibCheck": true,

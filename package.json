@@ -2,14 +2,15 @@
   "name": "arvo",
   "version": "0.2.0",
   "description": "A utility for managing and computing interdependent values within a tree.",
-  "main": "dist/arvo.js",
+  "main": "arvo.js",
   "files": [
-    "dist",
+    "arvo.js",
+    "arvo.min.js",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && terser dist/arvo.js -o dist/arvo.min.js",
+    "build": "tsc && terser arvo.js -o arvo.min.js",
     "test": "jest"
   },
   "repository": {
