@@ -1,9 +1,9 @@
-import Arvo from './arvo';
+import Cogni from './cogni';
 
-describe('Arvo', () => {
+describe('Cogni', () => {
   describe('Inheritance of computed values', () => {
     it('should compute values based on dependent values', () => {
-      const gen = new Arvo<{ x: number }, { parent: number, child: number }>();
+      const gen = new Cogni<{ x: number }, { parent: number, child: number }>();
 
       gen.define('parent', ({ x }) => x);
       gen.define('child', ({ parent: { parent } }) => parent * 2, ['parent']);
@@ -15,7 +15,7 @@ describe('Arvo', () => {
 
   describe('ComputeFunction invocation', () => {
     it('should invoke each dependent ComputeFunction only once per get invocation', () => {
-        const gen = new Arvo<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
+        const gen = new Cogni<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
 
         const parentMock = jest.fn().mockReturnValue(5);
         const child1Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent + 10);
@@ -39,7 +39,7 @@ describe('Arvo', () => {
 
   describe('Deeply Nested Dependencies', () => {
     it('should correctly compute values with multiple layers of dependencies', () => {
-      const gen = new Arvo<{ base: number }, { a: number, b: number, c: number, d: number, e: number }>();
+      const gen = new Cogni<{ base: number }, { a: number, b: number, c: number, d: number, e: number }>();
 
       gen.define('a', ({ base }) => base * 2);
       gen.define('b', ({ parent: { a } }) => a + 3, ['a']);
@@ -54,7 +54,7 @@ describe('Arvo', () => {
 
   describe('Error handling', () => {
     it('should throw an error when attempting to redefine a ComputeFunction for an existing key', () => {
-      const gen = new Arvo<{ value: number }, { parent: number }>();
+      const gen = new Cogni<{ value: number }, { parent: number }>();
 
       const parentMock1 = jest.fn();
       const parentMock2 = jest.fn();
@@ -67,7 +67,7 @@ describe('Arvo', () => {
     });
 
     it('should throw an error when a ComputeFunction is defined with undefined dependencies', () => {
-      const gen = new Arvo<{ value: number }, { parent: number, child: number }>();
+      const gen = new Cogni<{ value: number }, { parent: number, child: number }>();
 
       const childMock = jest.fn();
 

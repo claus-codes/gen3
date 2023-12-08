@@ -1,8 +1,8 @@
-# Arvo: Efficient Computation of Interdependent Values
+# Cogni: Efficient Computation of Interdependent Values
 
-`Arvo` is a powerful TypeScript utility designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
+`Cogni` is a powerful TypeScript utility designed to efficiently manage and compute interdependent values within a tree hierarchy. By defining a series of compute functions that can depend on each other, making it simple and intuitive to calculate values that rely on multiple inputs and previous computations.
 
-Efficiency is a core principle in the design of this utility. When you request a result by invoking a compute function, `Arvo` ensures that each compute function is invoked only once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
+Efficiency is a core principle in the design of this utility. When you request a result by invoking a compute function, `Cogni` ensures that each compute function is invoked only once, regardless of how many other compute functions depend on its output. This not only conserves computational resources but also ensures consistent results across the tree hierarchy.
 
 This design choice allows for complex compositions of compute functions without the worry of redundant calculations, leading to faster and more predictable outcomes.
 
@@ -16,7 +16,7 @@ This design choice allows for complex compositions of compute functions without 
 ## Installation:
 
 ```sh
-npm install arvo
+npm install cogni
 ```
 
 ## Usage
@@ -26,9 +26,9 @@ npm install arvo
 Create a single compute function that takes two parameters.
 
 ```js
-import Arvo from 'arvo';
+import Cogni from 'cogni';
 
-const gen = new Arvo();
+const gen = new Cogni();
 
 gen.define('output', ({ greeting, recipient }) => `${greeting} ${recipient}!`);
 
@@ -41,7 +41,7 @@ console.log(output); // Hello World!
 Compute values based on the results from parent compute functions.
 
 ```js
-const gen = new Arvo();
+const gen = new Cogni();
 
 // parentValue uses both value1 and value2 parameters
 gen.define('parentValue', ({ value1, value2 })
@@ -71,10 +71,10 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 Lets build a basic world generator using multiple compute functions, and a gradient noise function as a parameter. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
 
 ```js
-import Arvo from 'arvo';
+import Cogni from 'arvo';
 import { createNoise2D } from 'simplex-noise';
 
-const worldGen = new Arvo();
+const worldGen = new Cogni();
 const noise2D = createNoise2D();
 
 // Two continents horiontally spanning the height of the world
@@ -145,7 +145,7 @@ const { height, biome } = worldGen.get('sample', {
 
 ## TypeScript Examples
 
-Explore the following TypeScript examples to get a better understanding of how `Arvo` can be used:
+Explore the following TypeScript examples to get a better understanding of how `Cogni` can be used:
 
 - [Hello World!](examples/hello-world.ts)
 - [Inheritance](examples/inheritance.ts)

@@ -1,7 +1,7 @@
 /**
  * A basic world generator using multiple compute functions.
  */
-import Arvo from '../src/arvo';
+import Cogni from '../src/cogni';
 import { createNoise2D } from 'simplex-noise';
 
 const noise2D = createNoise2D();
@@ -29,7 +29,7 @@ type WorldGenResults = {
   }
 };
 
-const worldGen = new Arvo<WorldGenParams, WorldGenResults>();
+const worldGen = new Cogni<WorldGenParams, WorldGenResults>();
 
 // Two continents horiontally spanning the height of the world
 worldGen.define('continentShape', ({

@@ -1,7 +1,7 @@
 /**
  * Create a single compute function that takes two parameters.
  */
-import Arvo from '../src/arvo';
+import Cogni from '../src/cogni';
 
 // The parameters to pass to this tree
 type Params = {
@@ -15,7 +15,7 @@ type Results = {
 }
 
 // Create a new tree
-const gen = new Arvo<Params, Results>();
+const gen = new Cogni<Params, Results>();
 
 // Define a node in the tree
 gen.define('output', ({

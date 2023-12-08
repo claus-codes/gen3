@@ -1,5 +1,5 @@
 /**
- * Arvo: A utility for managing and computing interdependent values within a tree.
+ * Cogni: A utility for managing and computing interdependent values within a tree.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
@@ -26,7 +26,7 @@ type ParamsWithParents<
 };
 
 /**
- * The type for compute functions used within Arvo.
+ * The type for compute functions used within Cogni.
  *
  * Compute functions take in parameters and return a computed value. They may also depend on other computed
  * values, which can be accessed using the 'value' property of the parameters.
@@ -43,12 +43,12 @@ interface ComputeFunction<
 }
 
 /**
- * Arvo class: A structured way to manage and compute interdependent values within a tree hierarchy.
+ * Cogni class: A structured way to manage and compute interdependent values within a tree hierarchy.
  *
  * @template TParam - The type of parameters that can be used throughout the tree computations.
  * @template TResult - The type of results that can be expected from the tree computations.
  */
-class Arvo<
+class Cogni<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord
 > {
@@ -65,13 +65,13 @@ class Arvo<
    * @param dependencies - Optional list of keys that the compute function depends upon.
    * @throws {Error} If the key is already defined.
    * @throws {Error} If a dependency key has not been defined prior to the current computation function.
-   * @returns The current Arvo instance, allowing chaining of method calls.
+   * @returns The current Cogni instance, allowing chaining of method calls.
    */
   define<K extends keyof TResult>(
     key: K,
     fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>,
     dependencies?: Array<keyof TResult>
-  ): Arvo<TParam, TResult> {
+  ): Cogni<TParam, TResult> {
     if (this.fnMap.has(key))
       throw new Error(`"${key as string}" is already defined!`);
 
@@ -143,4 +143,4 @@ class Arvo<
   }
 }
 
-export = Arvo;
+export = Cogni;

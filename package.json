@@ -1,21 +1,21 @@
 {
-  "name": "arvo",
+  "name": "cogni",
   "version": "0.2.0",
   "description": "A utility for managing and computing interdependent values within a tree.",
-  "main": "arvo.js",
+  "main": "cogni.js",
   "files": [
-    "arvo.js",
-    "arvo.min.js",
+    "cogni.js",
+    "cogni.min.js",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && terser arvo.js -o arvo.min.js",
+    "build": "tsc && terser cogni.js -o cogni.min.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/claus-codes/arvo.git"
+    "url": "git+https://github.com/claus-codes/cogni.git"
   },
   "keywords": [
     "procedural",
@@ -25,14 +25,14 @@
     "tree",
     "graph",
     "hierarchy",
-    "arvo"
+    "cogni"
   ],
   "author": "Claus Nuoskanen <claus.nuoskanen@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/claus-codes/arvo/issues"
+    "url": "https://github.com/claus-codes/cogni/issues"
   },
-  "homepage": "https://github.com/claus-codes/arvo#readme",
+  "homepage": "https://github.com/claus-codes/cogni#readme",
   "devDependencies": {
     "@types/jest": "^29.5.11",
     "eslint": "^8.55.0",

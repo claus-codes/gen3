@@ -1,7 +1,7 @@
 /**
  * Compute values based on the results from parent compute functions.
  */
-import Arvo from '../src/arvo';
+import Cogni from '../src/cogni';
 
 // The parameters to pass to this tree
 type Params = {
@@ -18,7 +18,7 @@ type Results = {
   root: number;
 }
 
-const gen = new Arvo<Params, Results>();
+const gen = new Cogni<Params, Results>();
 
 // One parent that uses a value
 gen.define('parentValue', ({
