@@ -1,16 +1,16 @@
 {
   "name": "cogni",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A utility for managing and computing interdependent values within a tree.",
-  "main": "cogni.js",
+  "main": "dist/cogni.js",
   "files": [
-    "cogni.js",
-    "cogni.min.js",
+    "dist/cogni.js",
+    "dist/cogni.min.js",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && terser cogni.js -o cogni.min.js",
+    "build": "tsc && terser dist/cogni.js -o dist/cogni.min.js",
     "test": "jest"
   },
   "repository": {
@@ -19,13 +19,16 @@
   },
   "keywords": [
     "procedural",
+    "procgen",
     "generation",
     "generative",
     "compute",
     "tree",
     "graph",
     "hierarchy",
-    "cogni"
+    "hierarchial",
+    "cogni",
+    "functional"
   ],
   "author": "Claus Nuoskanen <claus.nuoskanen@gmail.com>",
   "license": "MIT",
