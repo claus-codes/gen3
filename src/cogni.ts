@@ -1,95 +1,72 @@
 /**
- * Cogni: A utility for managing and computing interdependent values within a tree.
+ * Cogni: A TypeScript library designed for managing computed values and their dependencies.
+ * It provides a flexible way to handle dynamic computations and caching mechanisms,
+ * making it ideal for applications with complex data relationships.
  *
  * @copyright 2023 Claus Nuoskanen
- * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
- * @license MIT
+ * @author Claus Nuoskanen
  */
 
-type ResultObject<T> = { [K in keyof T]: T[K] };
-type DefaultRecord = Record<string, unknown>;
+import type {
+  CogniInterface,
+  ComputeFunction,
+  DefaultRecord,
+  ParamsWithParents,
+  ResultObject
+} from './types';
 
 /**
- * Represents the parameters that can be passed to compute functions.
+ * Cogni class: Manages the computation of values and their dependencies.
+ * Allows for dynamic parameterization and structured output in tree-like computation models.
+ * Ideal for applications that need to compute values based on interdependent variables.
  *
- * The parent property within Params can be used to access previously computed values, thus ensuring
- * consistent and efficient calculations when iterating with different parameters.
- *
- * @template TParam - The parameters that can be passed to the compute function.
- * @template TResult - The expected result type of the compute function.
- */
-type ParamsWithParents<
-  TParam extends DefaultRecord,
-  TResult = DefaultRecord
-> = TParam & {
-  parent: ResultObject<TResult>;
-};
-
-/**
- * The type for compute functions used within Cogni.
- *
- * Compute functions take in parameters and return a computed value. They may also depend on other computed
- * values, which can be accessed using the 'value' property of the parameters.
- *
- * @template TParam - The parameters that can be passed to the compute function.
- * @template ReturnType - The expected return type of the compute function.
- */
-interface ComputeFunction<
-  TParam extends DefaultRecord = DefaultRecord,
-  TResult extends DefaultRecord = DefaultRecord,
-  ReturnType = unknown
-> {
-  (param: ParamsWithParents<TParam, TResult>): ReturnType;
-}
-
-/**
- * Cogni class: A structured way to manage and compute interdependent values within a tree hierarchy.
- *
- * @template TParam - The type of parameters that can be used throughout the tree computations.
- * @template TResult - The type of results that can be expected from the tree computations.
+ * @template TParam - Type of parameters for tree computations.
+ * @template TResult - Type of results produced by tree computations.
  */
 class Cogni<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord
-> {
+> implements CogniInterface<TParam, TResult> {
   /**
-   * A map of compute functions, keyed by the name of the computed value.
+   * A map storing compute functions, each keyed by a unique identifier representing the computed value's name.
+   * Enables efficient retrieval and management of compute functions.
    */
   private fnMap: Map<keyof TResult, ComputeFunction<TParam, TResult, TResult[keyof TResult]>> = new Map();
 
   /**
-   * Defines a computation function for a specific key.
+   * Registers a compute function under a unique key, ensuring no duplication and verifying dependencies.
+   * Ideal for constructing a computation graph where each node represents a computable value.
    *
-   * @param key - The unique key for which the compute function is defined.
-   * @param fn - The compute function to be associated with the given key.
-   * @param dependencies - Optional list of keys that the compute function depends upon.
-   * @throws {Error} If the key is already defined.
-   * @throws {Error} If a dependency key has not been defined prior to the current computation function.
-   * @returns The current Cogni instance, allowing chaining of method calls.
+   * @param key - Unique identifier for the compute function.
+   * @param fn - Compute function for calculating values.
+   * @param dependencies - Keys of dependent computations.
+   * @throws {Error} If the key is already defined or dependencies are undefined.
+   * @returns The Cogni instance for method chaining.
    */
   define<K extends keyof TResult>(
     key: K,
     fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>,
     dependencies?: Array<keyof TResult>
   ): Cogni<TParam, TResult> {
-    if (this.fnMap.has(key))
+    if (this.fnMap.has(key)) {
       throw new Error(`"${key as string}" is already defined!`);
-
+    }
+    // Ensure all required dependencies are defined
     dependencies?.forEach((dependency) => {
       if (!this.fnMap.has(dependency))
         throw new Error(`Dependency "${dependency as string}" has not been defined yet!`);
     });
-
     this.fnMap.set(key, dependencies ? this.wrapWithDependencies(fn, dependencies) : fn);
     return this;
   }
 
   /**
-   * Retrieves the computed value for a specific key, given a set of parameters.
+   * Retrieves the computed value for a given key, computing it if necessary.
+   * Essential for accessing results in the computation graph.
    *
-   * @param key - The key for which the computed value is required.
-   * @param param - The parameters used to compute the value.
-   * @returns The computed value for the given key.
+   * @param key - Identifier for the computed value.
+   * @param param - Parameters for the computation.
+   * @returns Computed value for the key.
    * @throws {Error} If the key is not defined.
    */
   get<K extends keyof TResult>(key: K, param: ParamsWithParents<TParam, TResult> | TParam): TResult[K] {
@@ -105,12 +82,13 @@ class Cogni<
   }
 
   /**
-   * Wraps a compute function ensuring its dependencies are computed first.
+   * Wraps a compute function to resolve dependencies first.
+   * Ensures correct computation order by pre-computing dependencies.
    *
    * @private
-   * @param fn - The compute function to be wrapped.
-   * @param dependencies - List of keys that the compute function depends upon.
-   * @returns A new compute function that first computes the values of its dependencies.
+   * @param fn - Original compute function.
+   * @param dependencies - Keys of required dependencies.
+   * @returns Compute function with dependencies resolved first.
    */
   private wrapWithDependencies<ReturnType>(
     fn: ComputeFunction<TParam, TResult, ReturnType>,
@@ -125,12 +103,13 @@ class Cogni<
   }
 
   /**
-   * Computes and retrieves the values for the specified dependencies using the provided parameters.
+   * Accumulates computed values for dependencies.
+   * Used internally for preparing inputs for compute functions.
    *
    * @private
-   * @param dependencies - An array of keys representing the dependencies for which values need to be computed.
-   * @param param - The parameters used to compute the values of the dependencies.
-   * @returns An object containing the computed values for the specified dependencies.
+   * @param dependencies - Keys for required dependencies.
+   * @param param - Parameters for computing dependencies.
+   * @returns Object with dependency keys mapped to their computed values.
    */
   private getParentValues(
     dependencies: Array<keyof TResult>,
@@ -143,4 +122,4 @@ class Cogni<
   }
 }
 
-export = Cogni;
+export default Cogni;

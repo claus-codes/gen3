@@ -3,10 +3,15 @@
   "version": "0.2.3",
   "description": "A utility for managing and computing interdependent values within a tree.",
   "main": "dist/cogni.js",
+  "exports": {
+    ".": "./dist/cogni.js",
+    "./store": "./dist/store.js",
+    "./store/memory": "./dist/store/memory.js",
+    "./store/json": "./dist/store/json.js"
+  },
   "files": [
-    "dist/cogni.js",
-    "dist/cogni.min.js",
-    "dist/cogni.d.ts",
+    "dist/**/*.js",
+    "dist/**/*.ts",
     "README.md",
     "LICENSE"
   ],

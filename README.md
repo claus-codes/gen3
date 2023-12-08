@@ -38,27 +38,22 @@ console.log(output); // Hello World!
 
 ### Example 2: Inheritance
 
-Compute values based on the results from parent compute functions.
+Compute values based on the results from parent compute functions. Function definititions can be chained, as `define` returns the Cogni instance.
 
 ```js
 const gen = new Cogni();
 
 // parentValue uses both value1 and value2 parameters
 gen.define('parentValue', ({ value1, value2 })
-=> value1 * value2);
-
+=> value1 * value2)
 // child1 uses value1 parameter, and the parentValue
-gen.define('child1', ({ value1, parent: { parentValue } })
-=> parentValue * 2 - value1,
-  ['parentValue']);
-
+.define('child1', ({ value1, parent: { parentValue } })
+=> parentValue * 2 - value1, ['parentValue'])
 // child2 uses value2 parameter, and the parentValue
-gen.define('child2', ({ value2, parent: { parentValue } })
-=> parentValue / 2 + value2,
-  ['parentValue']);
-
+.define('child2', ({ value2, parent: { parentValue } })
+=> parentValue / 2 + value2, ['parentValue'])
 // root uses someValue parameter, and parents child1 and child2
-gen.define('root', ({ someValue, parent: { child1, child2 } })
+.define('root', ({ someValue, parent: { child1, child2 } })
 => child1 * child2 + someValue,
   ['child1', 'child2']);
 

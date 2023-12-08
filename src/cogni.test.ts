@@ -52,6 +52,33 @@ describe('Cogni', () => {
     });
   });
 
+  describe('Nested Cogni Instances', () => {
+    it('should correctly compute values using nested Cogni instances', () => {
+      const parentGen = new Cogni<{ value: number }, { doubled: number }>();
+      parentGen.define('doubled', ({ value }) => value * 2);
+
+      const childGen = new Cogni<{ parentGen: Cogni<{ value: number }, { doubled: number }>, x: number }, { quadrupled: number }>();
+      childGen.define('quadrupled', ({ parentGen, x }) => parentGen.get('doubled', { value: x }) * 2);
+
+      const result = childGen.get('quadrupled', { parentGen, x: 3 });
+      expect(result).toBe(12); // 3 * 2 (in parentGen) * 2 = 12
+    });
+  });
+
+  describe('Error handling for non-existent keys', () => {
+    it('should throw an error when attempting to get a value for a non-existent key', () => {
+      const gen = new Cogni<{ value: number }, { someKey: number }>();
+
+      expect(() => {
+        gen.get('nonExistentKey' as any, { value: 5 });
+      }).toThrowError(/ComputeFunction "nonExistentKey" is not defined!/);
+
+      // Test case description: This test ensures that the Cogni class correctly handles attempts to retrieve
+      // values associated with keys that have not been defined. An appropriate error should be thrown,
+      // which is essential for debugging and maintaining data integrity.
+    });
+  });
+
   describe('Error handling', () => {
     it('should throw an error when attempting to redefine a ComputeFunction for an existing key', () => {
       const gen = new Cogni<{ value: number }, { parent: number }>();
