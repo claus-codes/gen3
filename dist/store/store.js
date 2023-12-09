@@ -1,9 +1,11 @@
+"use strict";
 /**
  * Cogni: A library for managing computed values and their dependencies.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * CogniStore: A class that acts as a centralized manager for caching computation results.
  * It supports various storage strategies, enhancing performance by reducing redundant computations.
@@ -101,4 +103,4 @@ class CogniStore {
         return keyValuePairs;
     }
 }
-export default CogniStore;
+exports.default = CogniStore;

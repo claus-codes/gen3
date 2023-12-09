@@ -1,11 +1,11 @@
 {
   "name": "cogni",
-  "version": "0.2.4",
+  "version": "0.2.6",
   "description": "A utility for managing and computing interdependent values within a tree.",
   "main": "dist/cogni.js",
   "exports": {
     ".": "./dist/cogni.js",
-    "./store": "./dist/store.js",
+    "./store": "./dist/store/store.js",
     "./store/memory": "./dist/store/memory.js",
     "./store/json": "./dist/store/json.js"
   },

@@ -5,8 +5,11 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
 
-import { CogniInterface, DefaultRecord } from '../types';
-import { CogniStoreInteraface } from './types';
+import type {
+  CogniInterface,
+  DefaultRecord,
+  CogniStoreInteraface
+} from '../types';
 
 /**
  * CogniStore: A class that acts as a centralized manager for caching computation results.

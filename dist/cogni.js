@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Cogni: A TypeScript library designed for managing computed values and their dependencies.
  * It provides a flexible way to handle dynamic computations and caching mechanisms,
@@ -6,6 +7,7 @@
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Cogni class: Manages the computation of values and their dependencies.
  * Allows for dynamic parameterization and structured output in tree-like computation models.
@@ -92,4 +94,4 @@ class Cogni {
         }, {});
     }
 }
-export default Cogni;
+exports.default = Cogni;

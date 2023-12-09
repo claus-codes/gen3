@@ -1,10 +1,12 @@
+"use strict";
 /**
  * Cogni: A library for managing computed values and their dependencies.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
-import { CogniStoreInteraface } from './types';
+Object.defineProperty(exports, "__esModule", { value: true });
+const types_1 = require("../types");
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
  *                    in computation functions.
@@ -15,7 +17,7 @@ import { CogniStoreInteraface } from './types';
  * @property {Cogni<TParam, TResult>} cogni - An instance of Cogni used for computation.
  * @property {Record<string, TResult[keyof TResult]>} data - The in-memory storage object for caching computed values.
  */
-class CogniStorgeMemory extends CogniStoreInteraface {
+class CogniStorgeMemory extends types_1.CogniStoreInteraface {
     cogni;
     data;
     /**
@@ -78,4 +80,4 @@ class CogniStorgeMemory extends CogniStoreInteraface {
         return true;
     }
 }
-export default CogniStorgeMemory;
+exports.default = CogniStorgeMemory;
