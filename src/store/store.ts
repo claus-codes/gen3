@@ -8,8 +8,8 @@
 import type {
   CogniInterface,
   DefaultRecord,
-  CogniStoreInteraface
 } from '../types';
+import { CogniStoreInteraface } from './types';
 
 /**
  * CogniStore: A class that acts as a centralized manager for caching computation results.
