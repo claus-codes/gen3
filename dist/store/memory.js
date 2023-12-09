@@ -1,9 +1,11 @@
+"use strict";
 /**
  * Cogni: A library for managing computed values and their dependencies.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
  *                    in computation functions.
@@ -15,6 +17,7 @@
  * @property {Record<string, TResult[keyof TResult]>} data - The in-memory storage object for caching computed values.
  */
 class CogniStorgeMemory {
+    data;
     /**
      * Constructs a new CogniStorgeMemory instance.
      *
@@ -72,4 +75,4 @@ class CogniStorgeMemory {
         return true;
     }
 }
-export default CogniStorgeMemory;
+exports.default = CogniStorgeMemory;

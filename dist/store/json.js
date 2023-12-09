@@ -1,11 +1,16 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Cogni: A library for managing computed values and their dependencies.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
-import path from 'path';
-import fs from 'fs';
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
  * Ideal for scenarios where persistent and structured storage of cache data is required.
@@ -19,6 +24,7 @@ import fs from 'fs';
  * @property filePath - Directory path for storing JSON cache files.
  */
 class CogniStorageJSON {
+    filePath;
     /**
      * Initializes a new instance of CogniStorageJSON.
      * Sets up the file path for storage and creates the directory if it doesn't exist.
@@ -28,9 +34,9 @@ class CogniStorageJSON {
      */
     constructor(filePath, createDir = true) {
         this.filePath = filePath;
-        this.filePath = path.resolve(filePath);
-        if (createDir && !fs.existsSync(this.filePath)) {
-            fs.mkdirSync(this.filePath, { recursive: true });
+        this.filePath = path_1.default.resolve(filePath);
+        if (createDir && !fs_1.default.existsSync(this.filePath)) {
+            fs_1.default.mkdirSync(this.filePath, { recursive: true });
         }
     }
     /**
@@ -41,7 +47,7 @@ class CogniStorageJSON {
      */
     async has(key) {
         try {
-            await fs.promises.access(this.makeFilePath(key), fs.constants.F_OK);
+            await fs_1.default.promises.access(this.makeFilePath(key), fs_1.default.constants.F_OK);
             return true;
         }
         catch (e) {
@@ -60,7 +66,7 @@ class CogniStorageJSON {
     async set(key, value) {
         try {
             const fileKey = this.makeFilePath(key);
-            await fs.promises.writeFile(fileKey, JSON.stringify(value, null, 2));
+            await fs_1.default.promises.writeFile(fileKey, JSON.stringify(value, null, 2));
             return true;
         }
         catch (e) {
@@ -78,7 +84,7 @@ class CogniStorageJSON {
     async get(key) {
         try {
             const fileKey = this.makeFilePath(key);
-            const fileContent = await fs.promises.readFile(fileKey, 'utf-8');
+            const fileContent = await fs_1.default.promises.readFile(fileKey, 'utf-8');
             return JSON.parse(fileContent);
         }
         catch (e) {
@@ -95,7 +101,7 @@ class CogniStorageJSON {
      */
     async remove(key) {
         try {
-            await fs.promises.unlink(this.makeFilePath(key));
+            await fs_1.default.promises.unlink(this.makeFilePath(key));
             return true;
         }
         catch (e) {
@@ -112,7 +118,7 @@ class CogniStorageJSON {
      * @returns The complete file path for the cache key.
      */
     makeFilePath(key) {
-        return path.join(this.filePath, `${key}.json`);
+        return path_1.default.join(this.filePath, `${key}.json`);
     }
     /**
      * Clears all values stored in the cache.
@@ -124,4 +130,4 @@ class CogniStorageJSON {
         throw new Error('Not implemented');
     }
 }
-export default CogniStorageJSON;
+exports.default = CogniStorageJSON;

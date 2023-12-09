@@ -1,9 +1,11 @@
+"use strict";
 /**
  * Cogni: A library for managing computed values and their dependencies.
  *
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * CogniStore: A class that acts as a centralized manager for caching computation results.
  * It supports various storage strategies, enhancing performance by reducing redundant computations.
@@ -13,6 +15,14 @@
  * @template TResult - Type of results expected from computation functions.
  */
 class CogniStore {
+    cogni;
+    cacheKeys;
+    defaultParameters;
+    /**
+     * Collection of storage instances for caching computed values.
+     * These storages can be customized to suit various caching strategies.
+     */
+    storages = [];
     /**
      * Constructs a CogniStore instance, initializing it with a computation context and cache key management.
      * Throws an error if cache keys are not provided, ensuring proper cache key setup.
@@ -26,11 +36,6 @@ class CogniStore {
         this.cogni = cogni;
         this.cacheKeys = cacheKeys;
         this.defaultParameters = defaultParameters;
-        /**
-         * Collection of storage instances for caching computed values.
-         * These storages can be customized to suit various caching strategies.
-         */
-        this.storages = [];
         if (!cacheKeys.length) {
             throw new Error('Cache keys must be provided');
         }
@@ -98,4 +103,4 @@ class CogniStore {
         return keyValuePairs;
     }
 }
-export default CogniStore;
+exports.default = CogniStore;

@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Cogni: A TypeScript library designed for managing computed values and their dependencies.
  * It provides a flexible way to handle dynamic computations and caching mechanisms,
@@ -6,6 +7,7 @@
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Cogni class: Manages the computation of values and their dependencies.
  * Allows for dynamic parameterization and structured output in tree-like computation models.
@@ -15,13 +17,11 @@
  * @template TResult - Type of results produced by tree computations.
  */
 class Cogni {
-    constructor() {
-        /**
-         * A map storing compute functions, each keyed by a unique identifier representing the computed value's name.
-         * Enables efficient retrieval and management of compute functions.
-         */
-        this.fnMap = new Map();
-    }
+    /**
+     * A map storing compute functions, each keyed by a unique identifier representing the computed value's name.
+     * Enables efficient retrieval and management of compute functions.
+     */
+    fnMap = new Map();
     /**
      * Registers a compute function under a unique key, ensuring no duplication and verifying dependencies.
      * Ideal for constructing a computation graph where each node represents a computable value.
@@ -94,4 +94,4 @@ class Cogni {
         }, {});
     }
 }
-export default Cogni;
+exports.default = Cogni;
