@@ -1,14 +1,22 @@
 {
   "name": "cogni",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "A utility for managing and computing interdependent values within a tree.",
   "main": "./dist/cogni.js",
   "types": "./dist/cogni.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/cogni.js"
+      "import": "./dist/cogni.js",
+      "types": "./dist/cogni.d.ts"
     },
-    "./store": "./dist/store/*.js"
+    "./store": {
+      "import": "./dist/store/store.js",
+      "types": "./dist/store/store.d.ts"
+    },
+    "./store/memory": {
+      "import": "./dist/store/memory.js",
+      "types": "./dist/store/memory.d.ts"
+    }
   },
   "files": [
     "dist/**/*.js",
