@@ -8,6 +8,7 @@
     "emitDeclarationOnly": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "src/**/*.test.ts"]
