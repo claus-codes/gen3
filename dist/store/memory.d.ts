@@ -5,7 +5,7 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
 import { DefaultRecord, CogniInterface } from '../types';
-import { CogniStoreInteraface } from './types';
+import { CogniStorage } from './store';
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
  *                    in computation functions.
@@ -16,7 +16,7 @@ import { CogniStoreInteraface } from './types';
  * @property {Cogni<TParam, TResult>} cogni - An instance of Cogni used for computation.
  * @property {Record<string, TResult[keyof TResult]>} data - The in-memory storage object for caching computed values.
  */
-declare class CogniStorgeMemory<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> extends CogniStoreInteraface<TParam, TResult> {
+declare class CogniStorgeMemory<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> extends CogniStorage<TParam, TResult> {
     protected cogni: CogniInterface<TParam, TResult>;
     private data;
     /**

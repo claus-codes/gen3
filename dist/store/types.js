@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CogniStoreInteraface = void 0;
 /**
  * CogniStoreInterface: An abstract class that defines the contract for a store
  * managing and caching computed values. It acts as a blueprint for implementing
@@ -9,8 +6,7 @@ exports.CogniStoreInteraface = void 0;
  * @template TParam - Generic type for input parameters, extending a key-value record.
  * @template TResult - Generic type for output results, also extending a key-value record.
  */
-class CogniStoreInteraface {
-    cogni;
+export class CogniStoreInteraface {
     /**
      * Constructs a new instance of CogniStoreInterface.
      *
@@ -20,4 +16,3 @@ class CogniStoreInteraface {
         this.cogni = cogni;
     }
 }
-exports.CogniStoreInteraface = CogniStoreInteraface;

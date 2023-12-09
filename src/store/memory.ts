@@ -10,7 +10,7 @@ import {
   CogniInterface,
 } from '../types';
 
-import { CogniStoreInteraface } from './types';
+import { CogniStorage } from './store';
 
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
@@ -25,7 +25,7 @@ import { CogniStoreInteraface } from './types';
 class CogniStorgeMemory<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord,
-> extends CogniStoreInteraface<TParam, TResult> {
+> extends CogniStorage<TParam, TResult> {
 
   /**
    * Constructs a new CogniStorgeMemory instance.

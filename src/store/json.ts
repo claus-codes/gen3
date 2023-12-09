@@ -8,8 +8,7 @@ import path from 'path'
 import fs from 'fs'
 
 import { DefaultRecord, CogniInterface } from '../types';
-
-import { CogniStoreInteraface } from './types';
+import { CogniStorage } from './store';
 
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
@@ -19,7 +18,7 @@ import { CogniStoreInteraface } from './types';
  *
  * @template TParam - Parameter types for computation functions, extending a key-value record.
  * @template TResult - Result types from computation functions, also extending a key-value record.
- * @extends CogniStoreInteraface<TParam, TResult>
+ * @extends CogniStorage<TParam, TResult>
  *
  * @property cogni - Instance of Cogni for computation management.
  * @property filePath - Directory path for storing JSON cache files.
@@ -27,7 +26,7 @@ import { CogniStoreInteraface } from './types';
 class CogniStorageJSON<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord,
-> extends CogniStoreInteraface<TParam, TResult> {
+> extends CogniStorage<TParam, TResult> {
 
   /**
    * Initializes a new instance of CogniStorageJSON.
