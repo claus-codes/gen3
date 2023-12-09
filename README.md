@@ -63,53 +63,112 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 
 ### Example 3: World Generator
 
-Lets build a basic world generator using multiple compute functions, and a gradient noise function as a parameter. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
+Lets build a very simple world generator using multiple compute functions. The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
 
-```js
-import Cogni from 'arvo';
+```javascript
+import Cogni from 'cogni';
 import { createNoise2D } from 'simplex-noise';
 
 const worldGen = new Cogni();
 const noise2D = createNoise2D();
+```
 
-// Two continents horiontally spanning the height of the world
+<!-- Contintent shape -->
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
+// First, lets make shapes for our main contintents.
+// Two large land masses at the opposite sides of the world.
 worldGen.define('continentShape', ({ x, y })
 => Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
 ```
-![Continent shapes](./images/world-gen-continent-shape.png "Continent shapes")
 
-```js
-// Gradient noise makes the world less flat
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em;">
+    <img src="./images/world-gen-continent-shape.png" alt="Preview of contintental shapes" style="min-width:100%;height:auto;"/>
+  </div>
+</div>
+
+<!-- Height noise -->
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
+// Using a gradient noise like Simplex Noise makes the world a little bit more interesting.
 worldGen.define('heightNoise', ({ x, y, noiseScale, noise2D })
 => noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5);
 ```
-![Height noise](./images/world-gen-height-noise.png "Height noise")
 
-```js
-// Combine continent shape and height noise for the final noise value
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em">
+    <img src="./images/world-gen-height-noise.png" alt="Preview of gradient noise using Simplex Noise" style="min-width:100%;height:auto;"/>
+  </div>
+</div>
+
+<!-- Combined height -->
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
+// Combine continent shape and height noise for the final noise value.
 worldGen.define('height', ({ parent: { continentShape, heightNoise } })
 => continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
 ```
-![Height](./images/world-gen-height.png "Height")
 
-```js
-// North is cold, South is hot, and peaks are covered in frost
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em">
+    <img src="./images/world-gen-height.png" alt="Preview of combined height map" style="min-width:100%;height:auto;"/>
+  </div>
+</div>
+
+<!-- Temperature -->
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
+// North is cold, South is hot, and peaks are covered in frost.
 worldGen.define('temperature', ({ x, y, parent: { height } })
 => height > 0.4 ? y - (height - 0.4) * 2 : y,
   ['height']);
 ```
-![Preview of temperature map](./images/world-gen-temperature.png "Temperature")
 
-```js
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em">
+    <img src="./images/world-gen-temperature.png" alt="Preview of temperature (red is hot, blue is cold)" style="min-width:100%;height:auto;"/>
+  </div>
+</div>
+
+<!-- Precipitation -->
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
 // Hotter areas have less rainfall
 worldGen.define('precipitation', ({ parent: { temperature } })
 => 1 - temperature,
   ['temperature']);
 ```
-![Image for precipitation](./images/world-gen-precipitation.png "Precipitation")
 
-```js
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em">
+    <img src="./images/world-gen-precipitation.png" alt="Preview of precipitation (hot and frozen areas have low rainfall)" style="min-width:100%;height:auto;"/>
+  </div>
+</div>
+
+<!-- Full biome examle -->
+
+<div style="display:grid;grid-template-columns:1fr; gap: 1em;">
+  <div style="display:flex;align-items:start">
+    <div style="width:100%">
+
+```javascript
 // Height, temperature and precipitation are used to determine the biome
 worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
 => {
@@ -121,7 +180,12 @@ worldGen.define('biome', ({ parent: { height, temperature, precipitation } })
   return 'meadows';
 }, ['height', 'temperature', 'precipitation']);
 ```
-![Image for biomes](./images/world-gen-biome.png "Biome")
+
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center; margin-left: 1em">
+    <img src="./images/world-gen-biome.png" alt="Combining the previous values we can determine the bioeme." style="min-width:100%;height:auto;"/>
+  </div>
+</div>
 
 ```js
 // Sampling returns the height and biome
