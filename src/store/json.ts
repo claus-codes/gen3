@@ -7,9 +7,9 @@
 import path from 'path'
 import fs from 'fs'
 
-import { DefaultRecord, CogniInterface } from '../../types';
+import { DefaultRecord, CogniInterface } from '../types';
 
-import { CogniStoreInteraface } from '../types';
+import { CogniStoreInteraface } from './types';
 
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.

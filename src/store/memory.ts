@@ -8,9 +8,9 @@
 import {
   DefaultRecord,
   CogniInterface,
-} from '../../types';
+} from '../types';
 
-import { CogniStoreInteraface } from '../types';
+import { CogniStoreInteraface } from './types';
 
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
