@@ -1,5 +1,5 @@
-import { DefaultRecord, CogniInterface } from '../cogni';
-import { CogniStorage } from './store';
+import { DefaultRecord } from '../cogni';
+import { CogniStorageInterface } from './store';
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
  * Ideal for scenarios where persistent and structured storage of cache data is required.
@@ -8,23 +8,20 @@ import { CogniStorage } from './store';
  *
  * @template TParam - Parameter types for computation functions, extending a key-value record.
  * @template TResult - Result types from computation functions, also extending a key-value record.
- * @extends CogniStorage<TParam, TResult>
  *
  * @property cogni - Instance of Cogni for computation management.
  * @property filePath - Directory path for storing JSON cache files.
  */
-declare class CogniStorageJSON<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> extends CogniStorage<TParam, TResult> {
-    protected cogni: CogniInterface<TParam, TResult>;
+declare class CogniStorageJSON<TParam extends Record<string, any> = DefaultRecord, TResult extends Record<string, any> = DefaultRecord> implements CogniStorageInterface<TParam, TResult> {
     private filePath;
     /**
      * Initializes a new instance of CogniStorageJSON.
      * Sets up the file path for storage and creates the directory if it doesn't exist.
      *
-     * @param cogni - Cogni instance for computation.
      * @param filePath - Path where JSON files will be stored.
      * @param createDir - Flag to create directory if it doesn't exist (default: true).
      */
-    constructor(cogni: CogniInterface<TParam, TResult>, filePath: string, createDir?: boolean);
+    constructor(filePath: string, createDir?: boolean);
     /**
      * Checks if a cached value exists for a given key using file existence.
      *

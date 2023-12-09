@@ -5,12 +5,8 @@
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
 
-import {
-  DefaultRecord,
-  CogniInterface,
-} from '../cogni';
-
-import { CogniStorage } from './store';
+import { DefaultRecord } from '../cogni';
+import { CogniStorageInterface } from './store';
 
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
@@ -25,17 +21,14 @@ import { CogniStorage } from './store';
 class CogniStorgeMemory<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord,
-> extends CogniStorage<TParam, TResult> {
+> implements CogniStorageInterface<TParam, TResult> {
 
   /**
    * Constructs a new CogniStorgeMemory instance.
    *
-   * @param {Cogni<TParam, TResult>} cogni - An instance of Cogni used for computation.
    * @param {Record<string, TResult[keyof TResult]>} [data={}] - An optional initial cache object.
    */
-  constructor(protected cogni: CogniInterface<TParam, TResult>, private data: Record<string, TResult[keyof TResult]> = {}) {
-    super(cogni);
-  }
+  constructor(private data: Record<string, TResult[keyof TResult]> = {}) {}
 
   /**
    * Checks if a given key exists in the cache.

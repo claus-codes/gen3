@@ -7,8 +7,8 @@
 import path from 'path'
 import fs from 'fs'
 
-import { DefaultRecord, CogniInterface } from '../cogni';
-import { CogniStorage } from './store';
+import { DefaultRecord } from '../cogni';
+import { CogniStorageInterface } from './store';
 
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
@@ -18,7 +18,6 @@ import { CogniStorage } from './store';
  *
  * @template TParam - Parameter types for computation functions, extending a key-value record.
  * @template TResult - Result types from computation functions, also extending a key-value record.
- * @extends CogniStorage<TParam, TResult>
  *
  * @property cogni - Instance of Cogni for computation management.
  * @property filePath - Directory path for storing JSON cache files.
@@ -26,18 +25,16 @@ import { CogniStorage } from './store';
 class CogniStorageJSON<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord,
-> extends CogniStorage<TParam, TResult> {
+> implements CogniStorageInterface<TParam, TResult> {
 
   /**
    * Initializes a new instance of CogniStorageJSON.
    * Sets up the file path for storage and creates the directory if it doesn't exist.
    *
-   * @param cogni - Cogni instance for computation.
    * @param filePath - Path where JSON files will be stored.
    * @param createDir - Flag to create directory if it doesn't exist (default: true).
    */
-  constructor(protected cogni: CogniInterface<TParam, TResult>, private filePath: string, createDir = true) {
-    super(cogni);
+  constructor(private filePath: string, createDir = true) {
     this.filePath = path.resolve(filePath);
     if (createDir && !fs.existsSync(this.filePath)) {
       fs.mkdirSync(this.filePath, { recursive: true })

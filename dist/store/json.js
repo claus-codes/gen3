@@ -6,7 +6,6 @@
 */
 import path from 'path';
 import fs from 'fs';
-import { CogniStorage } from './store';
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
  * Ideal for scenarios where persistent and structured storage of cache data is required.
@@ -15,23 +14,19 @@ import { CogniStorage } from './store';
  *
  * @template TParam - Parameter types for computation functions, extending a key-value record.
  * @template TResult - Result types from computation functions, also extending a key-value record.
- * @extends CogniStorage<TParam, TResult>
  *
  * @property cogni - Instance of Cogni for computation management.
  * @property filePath - Directory path for storing JSON cache files.
  */
-class CogniStorageJSON extends CogniStorage {
+class CogniStorageJSON {
     /**
      * Initializes a new instance of CogniStorageJSON.
      * Sets up the file path for storage and creates the directory if it doesn't exist.
      *
-     * @param cogni - Cogni instance for computation.
      * @param filePath - Path where JSON files will be stored.
      * @param createDir - Flag to create directory if it doesn't exist (default: true).
      */
-    constructor(cogni, filePath, createDir = true) {
-        super(cogni);
-        this.cogni = cogni;
+    constructor(filePath, createDir = true) {
         this.filePath = filePath;
         this.filePath = path.resolve(filePath);
         if (createDir && !fs.existsSync(this.filePath)) {

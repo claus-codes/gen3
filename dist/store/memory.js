@@ -4,7 +4,6 @@
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
-import { CogniStorage } from './store';
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used
  *                    in computation functions.
@@ -15,16 +14,13 @@ import { CogniStorage } from './store';
  * @property {Cogni<TParam, TResult>} cogni - An instance of Cogni used for computation.
  * @property {Record<string, TResult[keyof TResult]>} data - The in-memory storage object for caching computed values.
  */
-class CogniStorgeMemory extends CogniStorage {
+class CogniStorgeMemory {
     /**
      * Constructs a new CogniStorgeMemory instance.
      *
-     * @param {Cogni<TParam, TResult>} cogni - An instance of Cogni used for computation.
      * @param {Record<string, TResult[keyof TResult]>} [data={}] - An optional initial cache object.
      */
-    constructor(cogni, data = {}) {
-        super(cogni);
-        this.cogni = cogni;
+    constructor(data = {}) {
         this.data = data;
     }
     /**
