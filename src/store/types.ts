@@ -1,4 +1,4 @@
-import { CogniInterface, DefaultRecord } from "../types";
+import { CogniInterface, DefaultRecord } from "../cogni";
 
 /**
  * CogniStoreInterface: An abstract class that defines the contract for a store

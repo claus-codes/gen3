@@ -4,7 +4,7 @@
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
-import type { CogniInterface, DefaultRecord } from '../types';
+import type { CogniInterface, DefaultRecord } from '../cogni';
 /**
  * CogniStore: A class that acts as a centralized manager for caching computation results.
  * It supports various storage strategies, enhancing performance by reducing redundant computations.

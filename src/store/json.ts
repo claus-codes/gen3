@@ -7,7 +7,7 @@
 import path from 'path'
 import fs from 'fs'
 
-import { DefaultRecord, CogniInterface } from '../types';
+import { DefaultRecord, CogniInterface } from '../cogni';
 import { CogniStorage } from './store';
 
 /**

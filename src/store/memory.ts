@@ -8,7 +8,7 @@
 import {
   DefaultRecord,
   CogniInterface,
-} from '../types';
+} from '../cogni';
 
 import { CogniStorage } from './store';
 

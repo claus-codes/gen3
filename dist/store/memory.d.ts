@@ -4,7 +4,7 @@
  * @copyright 2023 Claus Nuoskanen
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
 */
-import { DefaultRecord, CogniInterface } from '../types';
+import { DefaultRecord, CogniInterface } from '../cogni';
 import { CogniStorage } from './store';
 /**
  * @template TParam - The type parameter extends a Record type, representing the types of parameters that can be used

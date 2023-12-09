@@ -1,4 +1,4 @@
-import { DefaultRecord, CogniInterface } from '../types';
+import { DefaultRecord, CogniInterface } from '../cogni';
 import { CogniStorage } from './store';
 /**
  * CogniStorageJSON: Provides a file-based caching mechanism by storing computed values as JSON files.
