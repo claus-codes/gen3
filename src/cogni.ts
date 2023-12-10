@@ -8,15 +8,6 @@
  */
 
 /**
- * Cogni: A TypeScript library designed for managing computed values and their dependencies.
- * It provides a flexible way to handle dynamic computations and caching mechanisms,
- * making it ideal for applications with complex data relationships.
- *
- * @copyright 2023 Claus Nuoskanen
- * @author Claus Nuoskanen
- */
-
-/**
  * DefaultRecord: Represents a basic record type with string keys and unknown type values.
  * Useful as a default type for generic parameters where the specific type is flexible.
  */
@@ -64,46 +55,6 @@ export interface ComputeFunction<
 }
 
 /**
- * CogniInterface: Central interface for the Cogni class, orchestrating computation
- * and dependency management. It defines the structure for managing computed values,
- * crucial for efficient data handling in dynamic and complex systems.
- *
- * @template TParam - Type for input parameters in computations.
- * @template TResult - Type for output results from computations.
- */
-export interface CogniInterface<
-  TParam extends Record<string, any> = DefaultRecord,
-  TResult extends Record<string, any> = DefaultRecord
-> {
-  /**
-   * Associates a compute function with a unique key, enabling the computation of values based on dependencies.
-   * This method allows for defining how specific values are computed and managed within the Cogni system.
-   * @param key - The unique key for which the compute function is defined.
-   * @param fn - The compute function to be associated with the given key.
-   * @param dependencies - Optional list of keys that the compute function depends upon.
-   * @returns The current Cogni instance, allowing for method chaining.
-   */
-  define<K extends keyof TResult>(
-    key: K,
-    fn: ComputeFunction<ParamsWithParents<TParam, TResult>, TResult, TResult[K]>,
-    dependencies?: Array<keyof TResult>
-  ): CogniInterface<TParam, TResult>;
-
-  /**
-   * Retrieves the computed value for a specific key, given a set of parameters.
-   * This method is crucial for accessing the results of computations defined by the `define` method,
-   * ensuring the efficient use and retrieval of computed data.
-   * @param key - The key for which the computed value is required.
-   * @param param - The parameters used to compute the value.
-   * @returns The computed value for the given key.
-   */
-  get<K extends keyof TResult>(
-    key: K,
-    param: ParamsWithParents<TParam, TResult> | TParam
-  ): TResult[K];
-}
-
-/**
  * Cogni class: Manages the computation of values and their dependencies.
  * Allows for dynamic parameterization and structured output in tree-like computation models.
  * Ideal for applications that need to compute values based on interdependent variables.
@@ -114,7 +65,7 @@ export interface CogniInterface<
 class Cogni<
   TParam extends Record<string, any> = DefaultRecord,
   TResult extends Record<string, any> = DefaultRecord
-> implements CogniInterface<TParam, TResult> {
+> {
   /**
    * A map storing compute functions, each keyed by a unique identifier representing the computed value's name.
    * Enables efficient retrieval and management of compute functions.
