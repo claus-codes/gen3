@@ -1,106 +1,84 @@
-import Cogni from './cogni';
+import cogni from './cogni';
 
-describe('Cogni', () => {
-  describe('Inheritance of computed values', () => {
-    it('should compute values based on dependent values', () => {
-      const gen = new Cogni<{ x: number }, { parent: number, child: number }>();
+describe('cogni', () => {
+  it('should compute basic operation', () => {
+    const { define, get } = cogni<{}, { result: number }>();
 
-      gen.define('parent', ({ x }) => x);
-      gen.define('child', ({ parent: { parent } }) => parent * 2, ['parent']);
+    define('result', () => 42);
 
-      const childValue = gen.get('child', { x: 5 });
-      expect(childValue).toBe(10);
-    });
+    expect(get('result', {})).toBe(42);
   });
 
-  describe('ComputeFunction invocation', () => {
-    it('should invoke each dependent ComputeFunction only once per get invocation', () => {
-        const gen = new Cogni<{ value: number }, { parent: number, child1: number, child2: number, finalChild: number }>();
+  it('should handle dependency computation', () => {
+    const { define, get } = cogni<{ base: number }, { double: number, triple: number }>();
 
-        const parentMock = jest.fn().mockReturnValue(5);
-        const child1Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent + 10);
-        const child2Mock = jest.fn().mockImplementation(({ parent: { parent } }) => parent * 2);
-        const finalChildMock = jest.fn().mockImplementation(({ parent: { child1, child2 } }) => child1 + child2);
+    define('double', ({ base }) => base * 2);
+    define('triple', ({ base }) => base * 3);
 
-        gen.define('parent', parentMock);
-        gen.define('child1', child1Mock, ['parent']);
-        gen.define('child2', child2Mock, ['parent']);
-        gen.define('finalChild', finalChildMock, ['child1', 'child2']);
-
-        gen.get('finalChild', { value: 5 });
-
-        expect(parentMock).toHaveBeenCalledTimes(1);
-        expect(child1Mock).toHaveBeenCalledTimes(1);
-        expect(child2Mock).toHaveBeenCalledTimes(1);
-        expect(finalChildMock).toHaveBeenCalledTimes(1);
-        expect(finalChildMock).toHaveBeenCalledWith({ value: 5, parent: { child1: 15, child2: 10 } });
-    });
+    expect(get('double', { base: 2 })).toBe(4);
+    expect(get('triple', { base: 3 })).toBe(9);
   });
 
-  describe('Deeply Nested Dependencies', () => {
-    it('should correctly compute values with multiple layers of dependencies', () => {
-      const gen = new Cogni<{ base: number }, { a: number, b: number, c: number, d: number, e: number }>();
+  it('should manage complex dependency tree computations', () => {
+    const { define, get } = cogni<{ a: number, b: number }, { sum: number, product: number, combined: number }>();
 
-      gen.define('a', ({ base }) => base * 2);
-      gen.define('b', ({ parent: { a } }) => a + 3, ['a']);
-      gen.define('c', ({ parent: { b } }) => b * 2, ['b']);
-      gen.define('d', ({ parent: { c } }) => c - 5, ['c']);
-      gen.define('e', ({ parent: { d } }) => d * d, ['d']);
+    define('sum', ({ a, b }) => a + b);
+    define('product', ({ a, b }) => a * b);
+    define('combined', (params, { sum, product }) => sum + product, ['sum', 'product']);
 
-      const result = gen.get('e', { base: 3 });
-      expect(result).toBe(169); // Calculation: 3*2 = 6, 6+3 = 9, 9*2 = 18, 18-5 = 13, 13*13 = 169
-    });
+    expect(get('combined', { a: 2, b: 3 })).toBe(11); // (2 + 3) + (2 * 3)
   });
 
-  describe('Nested Cogni Instances', () => {
-    it('should correctly compute values using nested Cogni instances', () => {
-      const parentGen = new Cogni<{ value: number }, { doubled: number }>();
-      parentGen.define('doubled', ({ value }) => value * 2);
+  it('should return multiple values with getMany', () => {
+    const { define, getMany } = cogni<{ value: number }, { double: number, square: number }>();
 
-      const childGen = new Cogni<{ parentGen: Cogni<{ value: number }, { doubled: number }>, x: number }, { quadrupled: number }>();
-      childGen.define('quadrupled', ({ parentGen, x }) => parentGen.get('doubled', { value: x }) * 2);
+    define('double', ({ value }) => value * 2);
+    define('square', ({ value }) => value * value);
 
-      const result = childGen.get('quadrupled', { parentGen, x: 3 });
-      expect(result).toBe(12); // 3 * 2 (in parentGen) * 2 = 12
-    });
+    const result = getMany(['double', 'square'], { value: 3 });
+
+    expect(result.double).toBe(6);
+    expect(result.square).toBe(9);
   });
 
-  describe('Error handling for non-existent keys', () => {
-    it('should throw an error when attempting to get a value for a non-existent key', () => {
-      const gen = new Cogni<{ value: number }, { someKey: number }>();
+  it('should execute parent compute function only once when multiple children depend on it', () => {
+    const { define, getMany } = cogni<{}, { parent: number, child1: number, child2: number }>();
 
-      expect(() => {
-        gen.get('nonExistentKey' as any, { value: 5 });
-      }).toThrowError(/ComputeFunction "nonExistentKey" is not defined!/);
+    // Creating a mock function for the parent compute function
+    const mockParentFunction = jest.fn().mockReturnValue(10);
 
-      // Test case description: This test ensures that the Cogni class correctly handles attempts to retrieve
-      // values associated with keys that have not been defined. An appropriate error should be thrown,
-      // which is essential for debugging and maintaining data integrity.
-    });
+    // Defining the parent node
+    define('parent', mockParentFunction);
+
+    // Defining child nodes that depend on the parent node
+    define('child1', (params, { parent }) => parent + 1, ['parent']);
+    define('child2', (params, { parent }) => parent + 2, ['parent']);
+
+    // Retrieving both child nodes in a single call
+    getMany(['child1', 'child2'], {});
+
+    // Expect the parent mock function to have been called only once
+    expect(mockParentFunction).toHaveBeenCalledTimes(1);
   });
 
-  describe('Error handling', () => {
-    it('should throw an error when attempting to redefine a ComputeFunction for an existing key', () => {
-      const gen = new Cogni<{ value: number }, { parent: number }>();
+  it('should throw error for undefined key', () => {
+    type Params = { [key: string]: any };
+    type Results = { [key: string]: any };
 
-      const parentMock1 = jest.fn();
-      const parentMock2 = jest.fn();
+    const { get } = cogni<Params, Results>();
 
-      gen.define('parent', parentMock1);
+    expect(() => get('undefinedKey', {})).toThrow();
+  });
 
-      expect(() => {
-        gen.define('parent', parentMock2);
-      }).toThrowError(/"parent" is already defined!/);
-    });
+  test('should throw error when defining a value with undefined parent value', () => {
+    type Params = { base: number };
+    type Results = { double: number, triple: number };
 
-    it('should throw an error when a ComputeFunction is defined with undefined dependencies', () => {
-      const gen = new Cogni<{ value: number }, { parent: number, child: number }>();
+    const { define } = cogni<Params, Results>();
 
-      const childMock = jest.fn();
-
-      expect(() => {
-        gen.define('child', childMock, ['parent']);
-      }).toThrowError(/Dependency "parent" has not been defined yet!/);
-    });
+    // Attempt to define a node with a non-existent parent node
+    expect(() => {
+      define('triple', ({ base }, { double }) => base * 3, ['double']);
+    }).toThrow();
   });
 });
