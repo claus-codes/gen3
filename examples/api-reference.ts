@@ -2,8 +2,8 @@ import cogni from '../src/cogni';
 
 // Define the structure for input parameters.
 type Params = {
-  a: number;
-  b: number;
+  readonly a: number;
+  readonly b: number;
 }
 
 // Define the structure for computation results.
@@ -23,8 +23,9 @@ define('multiply', ({ a, b }) => a * b);
 define('otherValue', (params, { multiply }) => multiply * 42, ['multiply']);
 
 // Retrieve and log the result of the 'multiply' computation node.
-console.log('multiply', get('multiply', { a: 10, b: 2 }));
+const value = get('multiply', { a: 10, b: 2 });
+console.log('multiply', value);
 
 // Retrieve multiple computed values ('multiply' and 'otherValue') and log them.
-const { multiply, otherValue } = getMany(['multiply', 'otherValue'], { a: 4, b: 20 });
+const { multiply, otherValue } = getMany(['multiply', 'otherValue'], { a: 10, b: 2 });
 console.log({ multiply, otherValue })

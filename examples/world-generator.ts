@@ -9,10 +9,10 @@ const noise2D = createNoise2D();
 
 // Parameters for the world generation, including coordinates (x, y) ranging from 0.0 to 1.0 for scalability.
 type WorldGenParams = {
-  x: number;
-  y: number;
-  noise2D: (x: number, y: number) => number;
-  noiseScale: number;
+  readonly x: number;
+  readonly y: number;
+  readonly noise2D: (x: number, y: number) => number;
+  readonly noiseScale: number;
 };
 
 // Result structure for world generation computations.
@@ -149,7 +149,7 @@ Object.keys(ranges).forEach((key) => {
 });
 
 // Print out biome distribution
-console.log('\Biome distribution:');
+console.log('\nBiome distribution:');
 Object.keys(counts).forEach((key) => {
   console.log(
     `${key}: ${Math.floor((counts[key as BiomeKey] / totalCellCount) * 100)} %`,

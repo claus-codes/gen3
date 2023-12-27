@@ -6,8 +6,8 @@ import cogni from '../src/cogni';
 // Define 'Params' type to specify the input parameters for your compute functions.
 // In this example, our compute functions will expect two parameters: 'greeting' and 'recipient'.
 type Params = {
-  greeting: string;
-  recipient: string;
+  readonly greeting: string;
+  readonly recipient: string;
 };
 
 // Define 'Results' type to specify the structure of the output from your compute functions.

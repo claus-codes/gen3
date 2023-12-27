@@ -24,8 +24,8 @@ import cogni from 'cogni';
 // Define 'Params' type to specify the input parameters for your compute functions.
 // In this example, our compute functions will expect two parameters: 'greeting' and 'recipient'.
 type Params = {
-  greeting: string;
-  recipient: string;
+  readonly greeting: string;
+  readonly recipient: string;
 };
 
 // Define 'Results' type to specify the structure of the output from your compute functions.
@@ -60,9 +60,9 @@ This example illustrates how computed values can be derived from other computati
 // Define input parameters for the computation tree.
 // In this example, we have three numerical parameters.
 type Params = {
-  param1: number;
-  param2: number;
-  param3: number;
+  readonly param1: number;
+  readonly param2: number;
+  readonly param3: number;
 };
 
 // Define the structure for the computed results.
@@ -118,6 +118,8 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 
 ### Example 3: World Generator
 
+The World Generator example showcases cogni's prowess in procedural content generation. Here, we create a dynamic map where each compute function plays a role in shaping the landscape, demonstrated through our step-by-step visual renderings.
+
 This example demonstrates the use of [`getMany`](#api-reference) for retrieving multiple computed values simultaneously, as opposed to using [`get`](#api-reference) for individual values. It showcases `cogni` in a scenario of procedural content generation, utilizing [`simplex-noise`](https://www.npmjs.com/package/simplex-noise) and multiple computation functions to create a world generator.
 
 ```typescript
@@ -128,10 +130,10 @@ const noise2D = createNoise2D();
 
 // Parameters for the world generation, including coordinates (x, y) ranging from 0.0 to 1.0 for scalability.
 type WorldGenParams = {
-  x: number;
-  y: number;
-  noise2D: (x: number, y: number) => number;
-  noiseScale: number;
+  readonly x: number;
+  readonly y: number;
+  readonly noise2D: (x: number, y: number) => number;
+  readonly noiseScale: number;
 };
 
 // Result structure for world generation computations.
@@ -147,7 +149,7 @@ type WorldGenResults = {
 const { define, getMany } = cogni<WorldGenParams, WorldGenResults>();
 ```
 
-I've included a visual representation of the computed value after each function.
+Now that we've defined our parameters and results, we can start defining the functions that sculpt the world.
 
 ```typescript
 // Define the continent shape based on x and y coordinates.
@@ -155,7 +157,7 @@ I've included a visual representation of the computed value after each function.
 define('continentShape', ({ x, y }) =>
   Math.abs(Math.cos(x * Math.PI * 2 + Math.PI * 0.5) * Math.sin(y * Math.PI)));
 ```
-![Continent shapes](./images/world-gen-continent-shape.png "Continent shapes")
+![Preview of Continent shapes](./images/world-gen-continent-shape.png "Preview of Continent shapes")
 
 ```typescript
 // Compute the height noise using the provided noise function and scale.
@@ -163,7 +165,7 @@ define('heightNoise',
   ({ x, y, noiseScale, noise2D }) =>
     noise2D(x * noiseScale, y * noiseScale) * 0.5 + 0.5); // Normalize to 0...1
 ```
-![Height noise](./images/world-gen-height-noise.png "Height noise")
+![Preview of Height noise](./images/world-gen-height-noise.png "Preview of Height noise")
 
 ```typescript
 // Calculate the height by combining continent shape and height noise to produce the final height value.
@@ -173,7 +175,7 @@ define('height',
     continentShape * heightNoise,
   ['continentShape', 'heightNoise']);
 ```
-![Height](./images/world-gen-height.png "Height")
+![Preview of Height](./images/world-gen-height.png "Preview of Height")
 
 ```typescript
 // Define temperature, factoring in height and latitude (y-coordinate).
@@ -183,7 +185,7 @@ define('temperature',
     (height > 0.4 ? y - (height - 0.4) * 2 : y),
   ['height']);
 ```
-![Temperature](./images/world-gen-temperature.png "Temperature")
+![Preview of Temperature](./images/world-gen-temperature.png "Preview of Temperature")
 
 ```typescript
 // Determine precipitation based on temperature.
@@ -193,7 +195,7 @@ define('precipitation',
     1 - temperature,
   ['temperature']);
 ```
-![Precipitation](./images/world-gen-precipitation.png "Precipitation")
+![Preview of Precipitation map](./images/world-gen-precipitation.png "Preview of Precipitation map")
 
 ```typescript
 // Determines the 'biome' based on 'height', 'temperature', and 'precipitation', influenced by the 'x' and 'y' coordinates from the parent nodes.
@@ -208,7 +210,7 @@ define('biome',
   },
   ['height', 'temperature', 'precipitation']);
 ```
-![Biome](./images/world-gen-biome.png "Biome")
+![Preview of Biome map](./images/world-gen-biome.png "Preview of Biome map")
 
 ```typescript
 // Retrieve sample values within the 0.0 to 1.0 range for a random location.
@@ -234,15 +236,23 @@ console.log(biomeMessage);
 Below is an overview of `cogni`'s main functions and methods, providing essential details for utilizing the library.
 
 ### Factory Function for creating a `cogni` instance
+
+**Introduction**: The `cogni` library is initialized through its factory function, which sets up the computation graph and returns an instance with the necessary methods.
+
 - `cogni<TParam, TResult>()`:  Initializes the computation graph, returning an instance of `cogni`.
-  - `TParam`: Type for input parameters (default: `DefaultRecord`).
-  - `TResult`: Type for output results (default: `DefaultRecord`).
+
+  - `TParam`: Generic type for input parameters. Defaults to `DefaultRecord` when not specified.
+
+    >  We recommend declaring `TParam` properties as `readonly` to ensure immutability of input parameters in `cogni`. This practice prevents unintended modifications, maintaining data integrity and consistent state throughout computations.
+
+  - `TResult`: Generic type defining the types of results. Defaults to `DefaultRecord` when not specified.
+
   - **Example**:
     ```typescript
     // Define the structure for input parameters.
     type Params = {
-      a: number;
-      b: number;
+      readonly a: number;
+      readonly b: number;
     }
 
     // Define the structure for computation results.
@@ -255,47 +265,73 @@ Below is an overview of `cogni`'s main functions and methods, providing essentia
     const { define, get, getMany } = cogni<Params, Results>();
     ```
 
+### Types and Interfaces
+
+  - `DefaultRecord`: Type alias for a generic record object. Used as a fallback type for `TParam` and `TResult`, facilitating generic computations.
+
+  - `ResultObject<TResult>`: Represents a collection of computed results. Each key corresponds to an optional value from `TResult`, allowing for flexibility in handling partial computations.
+
+  - `ComputeFunction<TParam, TResult, ReturnType = TResult[keyof TResult]>(param: TParam, parents: ResultObject<TResult>)`: Interface describing the computation function signature.
+
+    - **Parameteres**
+      - `param`: `TParam` - The input parameters.
+      - `parents`: `ResultObject<TResult>` - The computed parent values.
+
+    - **Returns**: `TResult[keyof TResult]` - The result of the compute function.
+
 ### `cogni` Instance Methods
-- `define(key, fn, parentKeys)`: Defines a new computation function with a unique key.
+
+- `define(key: string, fn: ComputeFunction, parentKeys?: string[])`: Defines a new computation function with a unique key.
+
   - **Parameters**:
-    - `key`: Unique identifier for the compute function.
-    - `fn`: The compute function itself.
-    - `parentKeys`: (Optional) Array of keys representing dependencies.
+    - `key`: `string` - Unique identifier for the compute function.
+    - `fn`: `ComputeFunction` - The compute function itself.
+    - `parentKeys`: `string[]` (Optional) - Array of keys representing dependencies.
+
+  - **Throws**: `Error` - if the same key is defined more than once, or if a `parentKey` is not defined. This prevents circular references.
+
   - **Example**:
     ```typescript
-    // Define a 'multiply' computation node that multiplies two numbers.
+    // Define a 'multiply' computation node.
+    // This function multiplies 'a' and 'b', two numbers provided in 'Params'.
     define('multiply', ({ a, b }) => a * b);
 
-    // Define another computation node 'otherValue' that depends on the result of 'multiply'.
+    // Define 'otherValue', a dependent computation node.
+    // It uses the result of 'multiply' and multiplies it by 42.
     define('otherValue', (params, { multiply }) => multiply * 42, ['multiply']);
     ```
 
-- `get(key, param)`: Retrieves the computed value for a specific key.
+- `get(key: string, param: TParam)`: Retrieves the computed value for a given key.
+
   - **Parameteres**
-    - `key`: The compute function to invoke.
-    - `param`: The input parameters.
-  - **Returns**: the computed value.
+    - `key`: `string` - The compute function to invoke.
+    - `param`: `TParam` - The input parameters.
+
+  - **Returns**: `TResult[keyof TResult]` - The result of the compute function.
+
+  - **Throws**: `Error` if a key is not defined.
+
   - **Example**:
     ```typescript
-    // Retrieve and log the result of the 'multiply' computation node.
-    get('multiply', { a: 10, b: 2 });
+    // Retrieve the result of the 'multiply' computation node.
+    const value = get('multiply', { a: 10, b: 2 });
     ```
 
-- `getMany(keys, param)`: Retrieves multiple computed values.
+- `getMany(keys: string[], param: TParam)`: Retrieves multiple computed values.
+
   - **Parameteres**
-    - `key`: The compute functions to invoke, and return their results..
-    - `param`: The input parameters.
-  - **Returns**: the computed values as an object with keys.
+    - `keys`: `string[]` - The compute functions to invoke.
+    - `param`: `TParam` - The input parameters.
+
+  - **Returns**: `ResultObject<TResult>` - The computed values as an object with keys.
+
+  - **Throws**: `Error` if any key is not defined.
+
   - **Example**:
     ```typescript
     // Retrieve multiple computed values ('multiply' and 'otherValue').
-    getMany(['multiply', 'otherValue'], { a: 10, b: 2 });
+    const { multiply, otherValue } = getMany(['multiply', 'otherValue'], { a: 10, b: 2 });
     ```
-
-### Types and Interfaces
-- `DefaultRecord`: Type alias for a generic record object.
-- `ResultObject<T>`: Type alias for a generic object with keys and values of the same type.
-- `ComputeFunction<TParam, TResult, ReturnType = TResult[keyof TResult]>`: Interface describing the computation function signature.
 
 ## License
 

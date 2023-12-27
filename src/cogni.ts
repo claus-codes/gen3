@@ -3,6 +3,7 @@
  * Ideal for data processing, reactive programming, and dynamic content generation.
  *
  * @module Cogni
+ * @version 1.0.2
  * @author 2023 Claus Nuoskanen
  */
 

@@ -1,6 +1,6 @@
 {
   "name": "cogni",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A utility for managing and computing interdependent values within a graph.",
   "main": "./dist/cogni.js",
   "types": "./dist/cogni.d.ts",
@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc && terser dist/cogni.js -o dist/cogni.min.js",
+    "build": "node util/update-version.js && tsc && terser dist/cogni.js -o dist/cogni.min.js",
     "test": "jest"
   },
   "repository": {

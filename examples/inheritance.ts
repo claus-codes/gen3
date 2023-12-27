@@ -6,9 +6,9 @@ import cogni from '../src/cogni';
 // Define input parameters for the computation tree.
 // In this example, we have three numerical parameters.
 type Params = {
-  param1: number;
-  param2: number;
-  param3: number;
+  readonly param1: number;
+  readonly param2: number;
+  readonly param3: number;
 };
 
 // Define the structure for the computed results.
