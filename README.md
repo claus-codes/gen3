@@ -147,9 +147,8 @@ type WorldGenResults = {
 const { define, getMany } = cogni<WorldGenParams, WorldGenResults>();
 ```
 
-The `x` and `y` coordinate parameters range between 0...1, so the size of the world is arbitrarily scalable.
+I've included a visual representation of the computed value after each function.
 
-I include a visual representation of the computed value after each function.
 ```typescript
 // Define the continent shape based on x and y coordinates.
 // This creates two continents horiontally that span the height of the world.
@@ -238,6 +237,23 @@ Below is an overview of `cogni`'s main functions and methods, providing essentia
 - `cogni<TParam, TResult>()`:  Initializes the computation graph, returning an instance of `cogni`.
   - `TParam`: Type for input parameters (default: `DefaultRecord`).
   - `TResult`: Type for output results (default: `DefaultRecord`).
+  - **Example**:
+    ```typescript
+    // Define the structure for input parameters.
+    type Params = {
+      a: number;
+      b: number;
+    }
+
+    // Define the structure for computation results.
+    type Results = {
+      multiply: number;
+      otherValue: number;
+    }
+
+    // Initialize cogni computation graph with defined parameter and result types.
+    const { define, get, getMany } = cogni<Params, Results>();
+    ```
 
 ### `cogni` Instance Methods
 - `define(key, fn, parentKeys)`: Defines a new computation function with a unique key.
@@ -247,11 +263,12 @@ Below is an overview of `cogni`'s main functions and methods, providing essentia
     - `parentKeys`: (Optional) Array of keys representing dependencies.
   - **Example**:
     ```typescript
+    // Define a 'multiply' computation node that multiplies two numbers.
     define('multiply', ({ a, b }) => a * b);
+
+    // Define another computation node 'otherValue' that depends on the result of 'multiply'.
     define('otherValue', (params, { multiply }) => multiply * 42, ['multiply']);
     ```
-
-    Here, we define a basic 'multiply' computation function that multiplies two inputs.
 
 - `get(key, param)`: Retrieves the computed value for a specific key.
   - **Parameteres**
@@ -260,6 +277,7 @@ Below is an overview of `cogni`'s main functions and methods, providing essentia
   - **Returns**: the computed value.
   - **Example**:
     ```typescript
+    // Retrieve and log the result of the 'multiply' computation node.
     get('multiply', { a: 10, b: 2 });
     ```
 
@@ -270,6 +288,7 @@ Below is an overview of `cogni`'s main functions and methods, providing essentia
   - **Returns**: the computed values as an object with keys.
   - **Example**:
     ```typescript
+    // Retrieve multiple computed values ('multiply' and 'otherValue').
     getMany(['multiply', 'otherValue'], { a: 10, b: 2 });
     ```
 

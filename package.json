@@ -1,6 +1,6 @@
 {
   "name": "cogni",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A utility for managing and computing interdependent values within a graph.",
   "main": "./dist/cogni.js",
   "types": "./dist/cogni.d.ts",
