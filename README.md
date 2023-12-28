@@ -2,6 +2,11 @@
 
 `cogni` is a TypeScript utility for efficient management of computed values in dependency trees, ideal for scenarios like game development and dynamic content generation. It minimizes redundant computations, ensuring compute functions are called as needed.
 
+## Key Features
+- **Efficient Dependency Management**: Streamlines the management of computed values in dependency trees.
+- **Asynchronous Support**: [`cogniAsync`](API-reference.md#cogniasync) extension accommodates asynchronous compute functions, allowing for handling of operations that depend on asynchronous data sources or processes.
+- **Memoization Utility**: [`cogniMemo`](API-reference.md#cognimemo) is a powerful memoization feature to optimize performance by caching and reusing results of expensive function calls.
+
 ## Installation
 
 Ensure Node.js, and optionally TypeScript, are set up before installing `cogni`. Install using npm or yarn:
@@ -16,7 +21,7 @@ yarn add cogni
 
 ### Example 1: Hello World
 
-This example shows how to define and use compute functions with `cogni`, using [`define`](#api-reference) for creating computation nodes and [`get`](#api-reference) for retrieving results.
+This example shows how to define and use compute functions with `cogni`, using [`define`](API-reference.md#api-reference) for creating computation nodes and [`get`](API-reference.md#api-reference) for retrieving results.
 
 ```typescript
 import cogni from 'cogni';
@@ -120,7 +125,7 @@ console.log(`The meaning of life, the universe, and everything is ${value}`); //
 
 The World Generator example showcases cogni's prowess in procedural content generation. Here, we create a dynamic map where each compute function plays a role in shaping the landscape, demonstrated through our step-by-step visual renderings.
 
-This example demonstrates the use of [`getMany`](#api-reference) for retrieving multiple computed values simultaneously, as opposed to using [`get`](#api-reference) for individual values. It showcases `cogni` in a scenario of procedural content generation, utilizing [`simplex-noise`](https://www.npmjs.com/package/simplex-noise) and multiple computation functions to create a world generator.
+This example demonstrates the use of [`getMany`](API-reference.md#api-reference) for retrieving multiple computed values simultaneously, as opposed to using [`get`](API-reference.md#api-reference) for individual values. It showcases `cogni` in a scenario of procedural content generation, utilizing [`simplex-noise`](https://www.npmjs.com/package/simplex-noise) and multiple computation functions to create a world generator.
 
 ```typescript
 import { createNoise2D } from 'simplex-noise';
@@ -231,107 +236,85 @@ const biomeMessage = sample.biome === 'ocean'
 console.log(biomeMessage);
 ```
 
-## API Reference
+### Using `cogniAsync` for Asynchronous Computations
 
-Below is an overview of `cogni`'s main functions and methods, providing essential details for utilizing the library.
+#### Example 4: Asynchronous Dependency Computations
 
-### Factory Function for creating a `cogni` instance
+Here, we demonstrate how [`cogniAsync`](API-reference.md#cogniasync) handles asynchronous compute functions, useful for scenarios involving async data fetching or processing.
 
-**Introduction**: The `cogni` library is initialized through its factory function, which sets up the computation graph and returns an instance with the necessary methods.
+```typescript
+import cogniAsync from 'cogni/async';
 
-- `cogni<TParam, TResult>()`:  Initializes the computation graph, returning an instance of `cogni`.
+// Initialize cogniAsync for asynchronous operations.
+const { define, get } = cogniAsync<{ base: number }, { double: number, triple: number }>();
 
-  - `TParam`: Generic type for input parameters. Defaults to `DefaultRecord` when not specified.
+// Asynchronously double the input.
+define('double', async ({ base }) => {
+  return new Promise(resolve => setTimeout(() => resolve(base * 2), 1000));
+});
 
-    >  We recommend declaring `TParam` properties as `readonly` to ensure immutability of input parameters in `cogni`. This practice prevents unintended modifications, maintaining data integrity and consistent state throughout computations.
+// Asynchronously triple the input.
+define('triple', async ({ base }) => base * 3);
 
-  - `TResult`: Generic type defining the types of results. Defaults to `DefaultRecord` when not specified.
+// Function to perform and log async computations.
+async function performAsyncComputations() {
+  try {
+    const doubleResult = await get('double', { base: 2 });
+    console.log('Double:', doubleResult);
 
-  - **Example**:
-    ```typescript
-    // Define the structure for input parameters.
-    type Params = {
-      readonly a: number;
-      readonly b: number;
-    }
+    const tripleResult = await get('triple', { base: 3 });
+    console.log('Triple:', tripleResult);
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
 
-    // Define the structure for computation results.
-    type Results = {
-      multiply: number;
-      otherValue: number;
-    }
+performAsyncComputations();
+```
 
-    // Initialize cogni computation graph with defined parameter and result types.
-    const { define, get, getMany } = cogni<Params, Results>();
-    ```
+In this example, [`cogniAsync`](API-reference.md#cogniasync) enables the definition and execution of asynchronous compute functions, seamlessly integrating asynchronous operations into your computation graph.
 
-### Types and Interfaces
+## Using `cogniMemo` for Memoization
 
-  - `DefaultRecord`: Type alias for a generic record object. Used as a fallback type for `TParam` and `TResult`, facilitating generic computations.
+### Example 5: Memoizing Computation Results
 
-  - `ResultObject<TResult>`: Represents a collection of computed results. Each key corresponds to an optional value from `TResult`, allowing for flexibility in handling partial computations.
+This example demonstrates the use of [`cogniMemo`](API-reference.md#cognimemo) to cache and reuse computation results, significantly improving performance for repeat calculations.
 
-  - `ComputeFunction<TParam, TResult, ReturnType = TResult[keyof TResult]>(param: TParam, parents: ResultObject<TResult>)`: Interface describing the computation function signature.
+```typescript
+import cogni from 'cogni';
+import { MemoryStorage, cogniMemoGet } from 'cogni/memo';
 
-    - **Parameteres**
-      - `param`: `TParam` - The input parameters.
-      - `parents`: `ResultObject<TResult>` - The computed parent values.
+// Initialize cogni with parameter and result types.
+const { define, get } = cogni<{ a: number }, { double: number }>();
 
-    - **Returns**: `TResult[keyof TResult]` - The result of the compute function.
+// Define a computation function.
+define('double', ({ a }) => a * 2);
 
-### `cogni` Instance Methods
+// Create a memory storage for caching.
+const storage = new MemoryStorage<string, number>();
 
-- `define(key: string, fn: ComputeFunction, parentKeys?: string[])`: Defines a new computation function with a unique key.
+// Memoize the 'double' computation.
+const memoizedDouble = cogniMemoGet(get, 'double', ['a'], {}, storage);
 
-  - **Parameters**:
-    - `key`: `string` - Unique identifier for the compute function.
-    - `fn`: `ComputeFunction` - The compute function itself.
-    - `parentKeys`: `string[]` (Optional) - Array of keys representing dependencies.
+// Function to demonstrate memoization.
+async function computeAndCache() {
+  // Compute 'double' for the first time.
+  const firstResult = await memoizedDouble({ a: 2 });
+  console.log('First call (computed):', firstResult);
 
-  - **Throws**: `Error` - if the same key is defined more than once, or if a `parentKey` is not defined. This prevents circular references.
+  // Second call should fetch from cache.
+  const secondResult = await memoizedDouble({ a: 2 });
+  console.log('Second call (cached):', secondResult);
+}
 
-  - **Example**:
-    ```typescript
-    // Define a 'multiply' computation node.
-    // This function multiplies 'a' and 'b', two numbers provided in 'Params'.
-    define('multiply', ({ a, b }) => a * b);
+computeAndCache();
 
-    // Define 'otherValue', a dependent computation node.
-    // It uses the result of 'multiply' and multiplies it by 42.
-    define('otherValue', (params, { multiply }) => multiply * 42, ['multiply']);
-    ```
+```
 
-- `get(key: string, param: TParam)`: Retrieves the computed value for a given key.
+This example illustrates how [`cogniMemo`](API-reference.md#cognimemo) can be used to memoize the results of compute functions, reducing computational overhead for repeated calls with the same parameters.
 
-  - **Parameteres**
-    - `key`: `string` - The compute function to invoke.
-    - `param`: `TParam` - The input parameters.
-
-  - **Returns**: `TResult[keyof TResult]` - The result of the compute function.
-
-  - **Throws**: `Error` if a key is not defined.
-
-  - **Example**:
-    ```typescript
-    // Retrieve the result of the 'multiply' computation node.
-    const value = get('multiply', { a: 10, b: 2 });
-    ```
-
-- `getMany(keys: string[], param: TParam)`: Retrieves multiple computed values.
-
-  - **Parameteres**
-    - `keys`: `string[]` - The compute functions to invoke.
-    - `param`: `TParam` - The input parameters.
-
-  - **Returns**: `ResultObject<TResult>` - The computed values as an object with keys.
-
-  - **Throws**: `Error` if any key is not defined.
-
-  - **Example**:
-    ```typescript
-    // Retrieve multiple computed values ('multiply' and 'otherValue').
-    const { multiply, otherValue } = getMany(['multiply', 'otherValue'], { a: 10, b: 2 });
-    ```
+## Detailed API Reference
+For a comprehensive understanding of all the functionalities, types, and methods available in cogni, please refer to the [API Reference](API-reference.md).
 
 ## License
 

@@ -3,12 +3,9 @@
  * Ideal for data processing, reactive programming, and dynamic content generation.
  *
  * @module cogni
- * @version 1.1.0
+ * @version 1.1.1
  * @author 2023 Claus Nuoskanen
  */
-
-export * from './async';
-export * from './memo';
 
 /**
  * A generic record object used as a flexible key-value pair structure.
