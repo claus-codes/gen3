@@ -2,10 +2,13 @@
  * cogni: A TypeScript library for efficient management of computed values in dependency graphs.
  * Ideal for data processing, reactive programming, and dynamic content generation.
  *
- * @module Cogni
- * @version 1.0.2
+ * @module cogni
+ * @version 1.1.0
  * @author 2023 Claus Nuoskanen
  */
+
+export * from './async';
+export * from './memo';
 
 /**
  * A generic record object used as a flexible key-value pair structure.
@@ -69,7 +72,6 @@ export type cogni<
    * @param key - Unique identifier for the compute function.
    * @param fn - Compute function for calculating values.
    * @param parentKeys - Keys of dependent computations.
-   * @returns The Cogni instance for method chaining.
    * @throws {Error} If the key is already defined or dependencies are undefined.
    */
   define: <K extends keyof TResult>(

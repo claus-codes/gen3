@@ -2,9 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const packageJson = require('../package.json');
 
+const srcPath = path.join(__dirname, '..', 'src');
+
 const version = packageJson.version;
 const filesToUpdate = [
-  path.join(__dirname, '..', 'src', 'cogni.ts'),
+  path.join(srcPath, 'index.ts'),
+  path.join(srcPath, 'async.ts'),
+  path.join(srcPath, 'memo.ts'),
 ];
 
 filesToUpdate.forEach(file => {

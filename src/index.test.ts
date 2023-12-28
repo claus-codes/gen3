@@ -1,4 +1,4 @@
-import cogni from './cogni';
+import cogni from '.';
 
 describe('cogni', () => {
   it('should compute basic operation', () => {

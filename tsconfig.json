@@ -1,21 +1,15 @@
 {
   "compilerOptions": {
-    "types": ["node", "jest"],
-    "target": "ESNext",
-    "module": "NodeNext",
-    "lib": ["ESNext"],
-    "outDir": "./dist",
-
-    "strict": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-
-    "declaration": true,
-    "emitDeclarationOnly": false,
-
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "NodeNext"
+    "target": "ESNext", // Target latest ECMAScript features
+    "lib": ["ESNext"], // Include latest ECMAScript library features
+    "strict": true, // Enable strict type-checking options
+    "esModuleInterop": true, // Enables compatibility with Babel/ES6 imports
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "declaration": true, // Generate corresponding '.d.ts' file
+    "outDir": "./dist", // Redirect output structure
+    "types": ["node", "jest"], // Include types for node and jest
+    "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "src/**/*.test.ts"]
+  "include": ["src/**/*.ts"], // Files to be included
+  "exclude": ["node_modules", "src/**/*.test.ts"] // Files to be excluded
 }
