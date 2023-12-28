@@ -4,21 +4,82 @@
 
 The `cogni` library is a TypeScript library designed for efficient management of computed values in dependency graphs, ideal for data processing, reactive programming, and dynamic content generation.
 
-- **Version:** 1.1.1
+- \*\*Version:\*\*1.1.2
 
 ## Modules
 
 ### cogni
 
-Core module for managing computation nodes.
+#### Core Module Description
+
+The core module for managing computation nodes.
+
+#### Factory Function
+
+- **cogni**: Initializes the cogni computation manager.
+  ```typescript
+  declare function cogni<TParam extends DefaultRecord, TResult extends DefaultRecord>(): cogni<TParam, TResult>;
+  ```
+
+#### Instance Methods
+
+- **define**
+  ```typescript
+  define: <K extends keyof TResult>(key: K, fn: ComputeFunction<TParam, TResult, TResult[K]>, parentKeys?: Array<keyof TResult>) => void;
+  ```
+- **get**
+  ```typescript
+  get: <K extends keyof TResult>(key: K, param: TParam, results?: ResultObject<TResult>) => TResult[K];
+  ```
+- **getMany**
+  ```typescript
+  getMany: (keys: Array<keyof TResult>, param: TParam, results?: ResultObject<TResult>) => ResultObject<TResult>;
+  ```
 
 ### cogniMemo
 
+#### Description
+
 Caching layer for the cogni library, enabling efficient memoization of computed values.
+
+#### Function Signatures
+
+- **cogniMemoGet**
+  ```typescript
+  function cogniMemoGet<TParam extends DefaultRecord, TResult extends DefaultRecord>(...): MemoizedCogniGet<TParam, TResult>;
+  ```
+- **cogniMemoGetMany**
+  ```typescript
+  function cogniMemoGetMany<TParam extends DefaultRecord, TResult extends DefaultRecord>(...): MemoizedCogniGetMany<TParam, TResult>;
+  ```
 
 ### cogniAsync
 
+#### Description
+
 Extension of the cogni library with support for asynchronous computation functions.
+
+#### Factory Function
+
+- **cogniAsync**: Initializes the cogniAsync computation manager.
+  ```typescript
+  function cogniAsync<TParam extends DefaultRecord, TResult extends DefaultRecord>(): cogniAsync<TParam, TResult>;
+  ```
+
+#### Instance Methods
+
+- **define**
+  ```typescript
+  define: <K extends keyof TResult>(key: K, fn: AsyncComputeFunction<TParam, TResult, TResult[K]>, parentKeys?: Array<keyof TResult>) => void;
+  ```
+- **get**
+  ```typescript
+  get: <K extends keyof TResult>(key: K, param: TParam, results?: ResultObject<TResult>) => Promise<TResult[K]>;
+  ```
+- **getMany**
+  ```typescript
+  getMany: (keys: Array<keyof TResult>, param: TParam, results?: ResultObject<TResult>) => Promise<ResultObject<TResult>>;
+  ```
 
 ## Types and Interfaces
 
@@ -28,8 +89,6 @@ Extension of the cogni library with support for asynchronous computation functio
 export type DefaultRecord = Record<string, unknown>;
 ```
 
-Generic record object used as a key-value pair structure.
-
 ### ResultObject
 
 ```typescript
@@ -38,8 +97,6 @@ export type ResultObject<T> = {
 };
 ```
 
-Generic object type for computation outputs with a consistent key-value format.
-
 ### ComputeFunction
 
 ```typescript
@@ -47,82 +104,3 @@ export interface ComputeFunction<TParam extends DefaultRecord, TResult extends D
     (param: TParam, parents: ResultObject<TResult>): ReturnType;
 }
 ```
-
-Interface for computation functions within cogni's dependency graph.
-
-## Factory Function
-
-### cogni
-
-Initializes the cogni computation manager.
-
-```typescript
-declare function cogni<TParam extends DefaultRecord, TResult extends DefaultRecord>(): cogni<TParam, TResult>;
-```
-
-#### Parameters
-
-- `TParam`: Generic type for input parameters, defaults to `DefaultRecord`.
-- `TResult`: Generic type defining the result types, defaults to `DefaultRecord`.
-
-#### Usage Example
-
-```typescript
-const { define, get, getMany } = cogni<Params, Results>();
-```
-
-## Instance Methods
-
-### define
-
-Defines a new computation function with a unique key.
-
-```typescript
-define: <K extends keyof TResult>(key: K, fn: ComputeFunction<TParam, TResult, TResult[K]>, parentKeys?: Array<keyof TResult>) => void;
-```
-
-#### Parameters
-
-- `key`: Unique identifier for the compute function.
-- `fn`: Compute function for calculating values.
-- `parentKeys`: (Optional) Keys of dependent computations.
-
-#### Throws
-
-- `Error`: If the key is already defined or dependencies are undefined.
-
-### get
-
-Retrieves a computed value for a given key.
-
-```typescript
-get: <K extends keyof TResult>(key: K, param: TParam, results?: ResultObject<TResult>) => TResult[K];
-```
-
-#### Parameters
-
-- `key`: Identifier for the computed value.
-- `param`: Parameters for the computation function.
-- `results`: (Optional) Object containing previously computed values.
-
-#### Throws
-
-- `Error`: If the key is not defined.
-
-### getMany
-
-Retrieves multiple computed values for specified keys.
-
-```typescript
-getMany: (keys: Array<keyof TResult>, param: TParam, results?: ResultObject<TResult>) => ResultObject<TResult>;
-```
-
-#### Parameters
-
-- `keys`: Keys for required dependencies.
-- `param`: Parameters for the computation functions.
-- `results`: (Optional) Object containing previously computed values.
-
-#### Throws
-
-- `Error`: If any key is not defined.

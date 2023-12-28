@@ -2,6 +2,8 @@
 
 `cogni` is a TypeScript utility for efficient management of computed values in dependency trees, ideal for scenarios like game development and dynamic content generation. It minimizes redundant computations, ensuring compute functions are called as needed.
 
+- \*\*Version:\*\*1.1.2
+
 ## Key Features
 - **Efficient Dependency Management**: Streamlines the management of computed values in dependency trees.
 - **Asynchronous Support**: [`cogniAsync`](API-reference.md#cogniasync) extension accommodates asynchronous compute functions, allowing for handling of operations that depend on asynchronous data sources or processes.
@@ -236,9 +238,9 @@ const biomeMessage = sample.biome === 'ocean'
 console.log(biomeMessage);
 ```
 
-### Using `cogniAsync` for Asynchronous Computations
+## Using `cogniAsync` for Asynchronous Computations
 
-#### Example 4: Asynchronous Dependency Computations
+### Example 4: Asynchronous Dependency Computations
 
 Here, we demonstrate how [`cogniAsync`](API-reference.md#cogniasync) handles asynchronous compute functions, useful for scenarios involving async data fetching or processing.
 

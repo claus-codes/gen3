@@ -3,7 +3,7 @@
  * Ideal for data processing, reactive programming, and dynamic content generation.
  *
  * @module cogniAsync
- * @version 1.1.1
+ * @version1.1.2
  * @author 2023 Claus Nuoskanen
  */
 

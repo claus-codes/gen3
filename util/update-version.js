@@ -2,18 +2,28 @@ const fs = require('fs');
 const path = require('path');
 const packageJson = require('../package.json');
 
+const version = packageJson.version;
+
 const srcPath = path.join(__dirname, '..', 'src');
 
-const version = packageJson.version;
-const filesToUpdate = [
+const sourceToUpdate = [
   path.join(srcPath, 'index.ts'),
   path.join(srcPath, 'async.ts'),
   path.join(srcPath, 'memo.ts'),
 ];
 
-filesToUpdate.forEach(file => {
+const readmePath = path.join(__dirname, '..');
+
+const readmeToUpdate = [
+  path.join(readmePath, 'README.md'),
+  path.join(readmePath, 'API-reference.md'),
+];
+
+sourceToUpdate.forEach(file => process(file, '@version'));
+readmeToUpdate.forEach(file => process(file, '- \\*\\*Version:\\*\\*'));
+
+function process(file, versionTag) {
   const data = fs.readFileSync(file, 'utf8');
-  const versionTag = '@version';
-  const updatedData = data.replace(new RegExp(`${versionTag}.*`, 'g'), `${versionTag} ${version}`);
+  const updatedData = data.replace(new RegExp(`${versionTag}.*`, 'g'), `${versionTag}${version}`);
   fs.writeFileSync(file, updatedData);
-});
+}
