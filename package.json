@@ -12,16 +12,32 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/mjs/index.d.ts",
       "import": "./dist/mjs/index.js",
       "require": "./dist/cjs/index.js"
     },
     "./async": {
+      "types": "./dist/mjs/async.d.ts",
       "import": "./dist/mjs/async.js",
       "require": "./dist/cjs/async.js"
     },
     "./memo": {
+      "types": "./dist/mjs/memo.d.ts",
       "import": "./dist/mjs/memo.js",
       "require": "./dist/cjs/memo.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/mjs/index.d.ts"
+      ],
+      "async": [
+        "./dist/mjs/async.d.ts"
+      ],
+      "memo": [
+        "./dist/mjs/memo.d.ts"
+      ]
     }
   },
   "scripts": {
