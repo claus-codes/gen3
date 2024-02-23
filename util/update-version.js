@@ -20,10 +20,10 @@ const readmeToUpdate = [
 ];
 
 sourceToUpdate.forEach(file => process(file, '@version'));
-readmeToUpdate.forEach(file => process(file, '- \\*\\*Version:\\*\\*'));
+readmeToUpdate.forEach(file => process(file, '- \\*\\*Version:\\*\\*', '- **Version:**'));
 
-function process(file, versionTag) {
+function process(file, versionTag, replaceTag = versionTag) {
   const data = fs.readFileSync(file, 'utf8');
-  const updatedData = data.replace(new RegExp(`${versionTag}.*`, 'g'), `${versionTag}${version}`);
+  const updatedData = data.replace(new RegExp(`${versionTag}.*`, 'g'), `${replaceTag} ${version}`);
   fs.writeFileSync(file, updatedData);
 }

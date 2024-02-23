@@ -3,7 +3,7 @@
  * Enables efficient memoization of computed values to optimize performance in dependency graphs.
  *
  * @module cogniMemo
- * @version1.1.2
+ * @version 1.1.3
  * @author Claus Nuoskanen <claus.nuoskanen@gmail.com>
  * @see cogni
 */
