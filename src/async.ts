@@ -243,11 +243,8 @@ function cogniAsync<
     param: TParam,
     results: AsyncResultObject<TResult> = {} as AsyncResultObject<TResult>,
   ): Promise<ResultObject<TResult>> {
-    const myResults: Array<Promise<[keyof TResult, TResult[keyof TResult]]>> =
-      [];
     // Iterate over keys.
-    for (const key of keys) {
-      // Check if the key has already been resolved.
+    const myResults = keys.map(async (key) => {
       if (!results[key]) {
         // Resolve the key and cache the result.
         results[key] = getInternal(key, param, results).catch((error) => {
@@ -258,8 +255,8 @@ function cogniAsync<
           );
         });
       }
-      myResults.push(results[key].then((value) => [key, value]));
-    }
+      return [key, await results[key]] as const;
+    });
     const resolvedResults = await Promise.all(myResults);
     return Object.fromEntries(resolvedResults) as ResultObject<TResult>;
   }
