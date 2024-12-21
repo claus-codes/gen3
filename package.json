@@ -1,0 +1,71 @@
+{
+  "name": "@fimbul-works/fimbul",
+  "description": "TypeScript dependency graph computation manager",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/fimbul-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/fimbul-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/fimbul-ts/issues"
+  },
+  "keywords": [
+    "compute",
+    "computation",
+    "dag",
+    "dependencies",
+    "dependency",
+    "dependency-management",
+    "dependency-resolution",
+    "dependency-resolver",
+    "directed-graph",
+    "functional",
+    "generation",
+    "generative",
+    "graph",
+    "hierarchy",
+    "hierarchial",
+    "procedural-generation",
+    "procgen",
+    "tree"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc --build --clean && tsc",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./async": {
+      "types": "./dist/async.d.ts",
+      "import": "./dist/async.js",
+      "require": "./dist/async.js"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3"
+  }
+}
