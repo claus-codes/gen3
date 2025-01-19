@@ -1,9 +1,12 @@
 
 # Fimbul
 
-A mighty TypeScript library for managing computation graphs with elegant dependency resolution.
+Fimbul is a TypeScript library for elegant dependency resolution in computation graphs - powerful, minimal, and blazingly fast.
 
-Fimbul brings order to chaos by managing complex computational dependencies with grace and power. Whether you're generating procedural worlds, handling data transformations, or managing complex state calculations, Fimbul helps you build clear, maintainable, and efficient computation chains.
+Whether you're generating procedural worlds, handling data transformations, or managing complex state calculations, Fimbul helps you build clear, maintainable, and efficient computation chains.
+
+[![npm version](https://badge.fury.io/js/%40fimbul-works%2Ffimbul.svg)](https://www.npmjs.com/package/@fimbul-works/fimbul)
+[![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/microsoft/TypeScript)
 
 ## Features
 

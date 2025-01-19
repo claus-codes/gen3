@@ -1,7 +1,7 @@
 {
   "name": "@fimbul-works/fimbul",
-  "description": "TypeScript dependency graph computation manager",
-  "version": "1.0.0",
+  "description": "Fimbul is a TypeScript library for elegant dependency resolution in computation graphs - powerful, minimal, and blazingly fast.",
+  "version": "1.0.2",
   "type": "module",
   "private": false,
   "license": "MIT",
@@ -43,6 +43,7 @@
     "dev": "tsc --watch",
     "build": "tsc --build --clean && tsc",
     "test": "jest",
+    "test:watch": "jest --watch",
     "prepublishOnly": "npm run build"
   },
   "exports": {
