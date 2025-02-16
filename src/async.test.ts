@@ -39,7 +39,7 @@ describe("FimbulAsync", () => {
 
     define("sum", async ({ a, b }) => a + b);
     define("product", async ({ a, b }) => a * b);
-    define("combined", async (params, { sum, product }) => sum + product, [
+    define("combined", async (input, { sum, product }) => sum + product, [
       "sum",
       "product",
     ]);
@@ -77,11 +77,11 @@ describe("FimbulAsync", () => {
 
     define("dependency", mockDependencyFunction);
 
-    define("child1", async (params, { dependency }) => dependency + 1, [
+    define("child1", async (input, { dependency }) => dependency + 1, [
       "dependency",
     ]);
 
-    define("child2", async (params, { dependency }) => dependency + 2, [
+    define("child2", async (input, { dependency }) => dependency + 2, [
       "dependency",
     ]);
 
@@ -144,7 +144,7 @@ describe("FimbulAsync", () => {
 
     define(
       "combined",
-      async (params, { first, second }) => `${first} and ${second}`,
+      async (input, { first, second }) => `${first} and ${second}`,
       ["first", "second"],
     );
 

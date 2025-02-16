@@ -15,17 +15,17 @@ export type Dependencies<R> = Array<keyof R>;
  * @template ReturnType - Specific return type
  */
 export type ComputationNode<
-  P = Record<string, unknown>,
+  P = unknown,
   R = Record<string, unknown>,
   ReturnType = R[keyof R],
-> = (param: P, dependencies: ResultObject<R>) => ReturnType;
+> = (input: P, dependencies: ResultObject<R>) => ReturnType;
 
 /**
  * Initializes Fimbul computation manager
  * @template P - Input parameter type
  * @template R - Result object type
  */
-export type Fimbul<P = Record<string, unknown>, R = Record<string, unknown>> = {
+export type Fimbul<P = unknown, R = Record<string, unknown>> = {
   /**
    * Defines a computation node
    * @param key - Unique identifier
@@ -49,22 +49,22 @@ export type Fimbul<P = Record<string, unknown>, R = Record<string, unknown>> = {
   /**
    * Gets a computed value
    * @param key - Node identifier to compute
-   * @param param - Input parameters
+   * @param input - Input parameters
    * @param results - Optional cached results
    * @return The computed value
    */
-  get: <K extends keyof R>(key: K, param: P, results?: ResultObject<R>) => R[K];
+  get: <K extends keyof R>(key: K, input: P, results?: ResultObject<R>) => R[K];
 
   /**
    * Gets multiple computed values
    * @param keys - Node identifiers to compute
-   * @param param - Input parameters
+   * @param input - Input parameters
    * @param results - Optional cached results
    * @return The computed values
    */
   getMany: (
     keys: Dependencies<R>,
-    param: P,
+    input: P,
     results?: ResultObject<R>,
   ) => ResultObject<R>;
 };
@@ -73,59 +73,56 @@ function Fimbul<
   P = Record<string, unknown>,
   R = Record<string, unknown>,
 >(): Fimbul<P, R> {
-  const functions: Map<keyof R, ComputationNode<P, R, R[keyof R]>> = new Map();
+  const nodes: Map<keyof R, ComputationNode<P, R, R[keyof R]>> = new Map();
 
   function define<K extends keyof R>(
     key: K,
     fn: ComputationNode<P, R, R[K]>,
     dependencies?: Dependencies<R>,
   ) {
-    if (functions.has(key)) {
+    if (nodes.has(key)) {
       throw new Error(`Node "${key as string}" already exists!`);
     }
 
     if (dependencies) {
       for (const depKey of dependencies) {
-        if (!functions.has(depKey))
+        if (!nodes.has(depKey))
           throw new Error(`Node "${depKey as string}" not found!`);
       }
     }
 
-    functions.set(
-      key,
-      dependencies ? provideDependencies(fn, dependencies) : fn,
-    );
+    nodes.set(key, dependencies ? provideDependencies(fn, dependencies) : fn);
   }
 
   function has(key: keyof R) {
-    return functions.has(key);
+    return nodes.has(key);
   }
 
   function get<K extends keyof R>(
     key: K,
-    param: P,
+    input: P,
     results: ResultObject<R> = {} as ResultObject<R>,
   ): ResultObject<R>[K] {
-    if (results[key]) {
+    if (results[key] !== undefined) {
       return results[key];
     }
 
-    const fn = functions.get(key);
+    const fn = nodes.get(key);
     if (!fn) {
       throw new Error(`Node "${key as string}" not found!`);
     }
 
-    results[key] = fn(param, results) as R[K];
+    results[key] = fn(input, results) as R[K];
     return results[key];
   }
 
   function getMany(
     keys: Dependencies<R>,
-    param: P,
+    input: P,
     results: ResultObject<R> = {} as ResultObject<R>,
   ): ResultObject<R> {
     return keys.reduce(
-      (acc, key) => ((acc[key] = get(key, param, results)), acc),
+      (acc, key) => ((acc[key] = get(key, input, results)), acc),
       results,
     );
   }
@@ -135,8 +132,8 @@ function Fimbul<
     fn: ComputationNode<P, R, ReturnType>,
     dependencies: Dependencies<R>,
   ): ComputationNode<P, R, ReturnType> {
-    return (param: P, results: ResultObject<R>): ReturnType =>
-      fn(param, getMany(dependencies, param, results ?? {}));
+    return (input: P, results: ResultObject<R>): ReturnType =>
+      fn(input, getMany(dependencies, input, results ?? {}));
   }
 
   return {

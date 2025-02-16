@@ -94,4 +94,23 @@ describe("Fimbul", () => {
       define("triple", ({ base }, { double }) => base * 3, ["double"]);
     }).toThrow();
   });
+
+  it("should properly cache nullish values and not recompute them", () => {
+    const { define, getMany } = Fimbul<
+      DefaultRecord,
+      { zero: number; usesZero1: number; usesZero2: number }
+    >();
+
+    const computeZero = jest.fn().mockReturnValue(0);
+    define("zero", computeZero);
+
+    define("usesZero1", (_, { zero }) => zero + 1, ["zero"]);
+    define("usesZero2", (_, { zero }) => zero + 2, ["zero"]);
+
+    const results = getMany(["usesZero1", "usesZero2"], {});
+
+    expect(results.usesZero1).toBe(1);
+    expect(results.usesZero2).toBe(2);
+    expect(computeZero).toHaveBeenCalledTimes(1);
+  });
 });

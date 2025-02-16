@@ -1,7 +1,7 @@
 {
   "name": "@fimbul-works/fimbul",
   "description": "Fimbul is a TypeScript library for elegant dependency resolution in computation graphs - powerful, minimal, and blazingly fast.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "type": "module",
   "private": false,
   "license": "MIT",

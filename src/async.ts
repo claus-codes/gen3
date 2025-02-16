@@ -13,20 +13,20 @@ export type AsyncResultObject<T> = { [K in keyof T]: Promise<T[K]> };
  * @template ReturnType - Specific return type
  */
 export type AsyncComputationNode<
-  P = Record<string, unknown>,
+  P = unknown,
   R = Record<string, unknown>,
   ReturnType = R[keyof R],
 > = (
-  param: P,
+  input: P,
   dependencies: ResultObject<R>,
 ) => Promise<ReturnType> | ReturnType;
 
 /** Internal type for Promise-normalized computation nodes */
 type ResolvedComputationNode<
-  P = Record<string, unknown>,
+  P = unknown,
   R = Record<string, unknown>,
   ReturnType = R[keyof R],
-> = (param: P, dependencies: AsyncResultObject<R>) => Promise<ReturnType>;
+> = (input: P, dependencies: AsyncResultObject<R>) => Promise<ReturnType>;
 
 /**
  * Async computation manager
@@ -53,26 +53,26 @@ export type FimbulAsync<
   /**
    * Gets a computed value asynchronously
    * @param key - Node identifier to compute
-   * @param param - Input parameters
+   * @param input - Input parameters
    * @param results - Optional cached results
    * @returns Promise of the computed value
    */
   get: <K extends keyof R>(
     key: K,
-    param: P,
+    input: P,
     results?: ResultObject<R>,
   ) => Promise<R[K]>;
 
   /**
    * Gets multiple computed values asynchronously
    * @param keys - Node identifiers to compute
-   * @param param - Input parameters
+   * @param input - Input parameters
    * @param results - Optional cached results
    * @returns Promise of computed values
    */
   getMany: (
     keys: Dependencies<R>,
-    param: P,
+    input: P,
     results?: ResultObject<R>,
   ) => Promise<ResultObject<R>>;
 
@@ -88,7 +88,7 @@ function FimbulAsync<
   P = Record<string, unknown>,
   R = Record<string, unknown>,
 >(): FimbulAsync<P, R> {
-  const functions: Map<
+  const nodes: Map<
     keyof R,
     ResolvedComputationNode<P, R, R[keyof R]>
   > = new Map();
@@ -98,35 +98,35 @@ function FimbulAsync<
     fn: AsyncComputationNode<P, R, R[K]>,
     dependencies?: Dependencies<R>,
   ) {
-    if (functions.has(key)) {
+    if (nodes.has(key)) {
       throw new Error(`Key "${key as string}" already exists!`);
     }
 
     if (dependencies) {
       for (const dependencyKey of dependencies) {
-        if (!functions.has(dependencyKey))
+        if (!nodes.has(dependencyKey))
           throw new Error(`Key "${dependencyKey as string}" not found!`);
       }
     }
 
-    functions.set(key, provideDependencies(fn, dependencies ?? []));
+    nodes.set(key, provideDependencies(fn, dependencies ?? []));
   }
 
   async function get<K extends keyof R>(
     key: K,
-    param: P,
+    input: P,
     results: ResultObject<R> = {} as ResultObject<R>,
   ): Promise<ResultObject<R>[K]> {
-    if (results[key]) {
+    if (results[key] !== undefined) {
       return results[key];
     }
 
-    return getInternal(key, param, resultsToPromises(results));
+    return resolveComputation(key, input, resultsToPromises(results));
   }
 
-  async function getInternal<K extends keyof R>(
+  async function resolveComputation<K extends keyof R>(
     key: K,
-    param: P,
+    input: P,
     results: AsyncResultObject<R> = {} as AsyncResultObject<R>,
   ): Promise<R[K]> {
     const result = results[key];
@@ -134,25 +134,25 @@ function FimbulAsync<
       return await result;
     }
 
-    const fn = functions.get(key);
+    const fn = nodes.get(key);
     if (!fn) {
       throw new Error(`Key "${key as string}" not found!`);
     }
 
-    results[key] = fn(param, results) as Promise<R[K]>;
+    results[key] = fn(input, results) as Promise<R[K]>;
     return await results[key];
   }
 
   async function getMany(
     keys: Dependencies<R>,
-    param: P,
+    input: P,
     results: ResultObject<R> = {} as ResultObject<R>,
   ): Promise<ResultObject<R>> {
-    return resolveDependencies(keys, param, resultsToPromises(results));
+    return resolveDependencies(keys, input, resultsToPromises(results));
   }
 
   function has(key: keyof R) {
-    return functions.has(key);
+    return nodes.has(key);
   }
 
   function provideDependencies<ReturnType>(
@@ -160,15 +160,15 @@ function FimbulAsync<
     dependencies: Dependencies<R>,
   ): ResolvedComputationNode<P, R, ReturnType> {
     return async (
-      param: P,
+      input: P,
       results: AsyncResultObject<R>,
     ): Promise<ReturnType> => {
       const resolvedDependencies = await resolveDependencies(
         dependencies,
-        param,
+        input,
         results,
       );
-      return await fn(param, resolvedDependencies);
+      return await fn(input, resolvedDependencies);
     };
   }
 
@@ -185,18 +185,20 @@ function FimbulAsync<
 
   async function resolveDependencies(
     keys: Dependencies<R>,
-    param: P,
+    input: P,
     results: AsyncResultObject<R> = {} as AsyncResultObject<R>,
   ): Promise<ResultObject<R>> {
     const asyncResults = keys.map(async (key) => {
       if (!results[key]) {
-        results[key] = getInternal(key, param, results).catch((error) => {
-          throw new Error(
-            `Failed to resolve dependencies for key "${
-              key as string
-            }": ${error}`,
-          );
-        });
+        results[key] = resolveComputation(key, input, results).catch(
+          (error) => {
+            throw new Error(
+              `Failed to resolve dependencies for key "${
+                key as string
+              }": ${error}`,
+            );
+          },
+        );
       }
       return [key, await results[key]] as const;
     });
